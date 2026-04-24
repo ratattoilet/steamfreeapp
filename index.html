@@ -254,23 +254,23 @@
             }
         }
         async function fetchGames() {
-            feed.innerHTML = '<div class="loading">Оновлення списку...</div>';
+            feed.innerHTML = '<div class="loading">Завантаження магічних знижок...</div>';
             
-            // Використовуємо проксі для обходу CORS
+            // Використовуємо інший проксі (cors-anywhere альтернатива)
             const targetUrl = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game';
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
             
             try {
                 const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('Помилка мережі');
                 
                 const data = await response.json();
-                // allorigins повертає дані в полі .contents як рядок, тому парсимо його
-                const games = JSON.parse(data.contents);
+                // Парсимо вміст, який прийшов від проксі
+                const games = typeof data.contents === 'string' ? JSON.parse(data.contents) : data.contents;
                 
                 feed.innerHTML = '';
 
-                if(!games || games.length === 0) {
+                if (!games || !Array.isArray(games) || games.length === 0) {
                     feed.innerHTML = '<div class="loading">Наразі немає безкоштовних ігор :(</div>';
                     return;
                 }
@@ -308,8 +308,8 @@
                     feed.appendChild(card);
                 });
             } catch (error) {
-                console.error("Помилка:", error);
-                feed.innerHTML = '<div class="loading">Помилка завантаження даних. Спробуйте оновити сторінку або перевірте консоль браузера.</div>';
+                console.error("Деталі помилки:", error);
+                feed.innerHTML = `<div class="loading">Помилка завантаження. Спробуйте натиснути "Оновити".<br><small style="font-size:10px; color:gray;">${error.message}</small></div>`;
             }
         }
         // Біндимо кнопку оновлення

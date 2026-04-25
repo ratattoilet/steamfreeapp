@@ -3,1113 +3,783 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Benini Ninja</title>
+<title>Архів Беніні</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&family=Montserrat:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+:root{
+  --bg:#0b0c10;--bg2:#12141a;--bg3:#1c1f28;
+  --primary:#a78bfa;--primary-rgb:167,139,250;
+  --accent:#f472b6;--gold:#f59e0b;
+  --text:#e8e6f0;--text-dim:rgba(232,230,240,.45);
+  --card:#1c1f28cc;--border:rgba(167,139,250,.18);
+  --glow:rgba(167,139,250,.25);--nav:#0b0c10ee;
+  --r:18px;--t:all .32s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="t2"]{--bg:#0d1117;--bg2:#131920;--bg3:#1c2430;--primary:#38bdf8;--primary-rgb:56,189,248;--accent:#818cf8;--text:#dde6f0;--card:#1c243088;--border:rgba(56,189,248,.18);--glow:rgba(56,189,248,.25);--nav:#0d1117ee;}
+[data-theme="t3"]{--bg:#fdf6ee;--bg2:#f0e6d6;--bg3:#e8d8c4;--primary:#92400e;--primary-rgb:146,64,14;--accent:#dc2626;--text:#2d1a0a;--card:#e8d8c488;--text-dim:rgba(45,26,10,.45);--border:rgba(146,64,14,.2);--glow:rgba(146,64,14,.25);--nav:#fdf6eeee;}
+[data-theme="t4"]{--bg:#ffffff;--bg2:#f4f4f5;--bg3:#e4e4e7;--primary:#e11d48;--primary-rgb:225,29,72;--accent:#7c3aed;--text:#18181b;--card:#e4e4e788;--text-dim:rgba(24,24,27,.45);--border:rgba(225,29,72,.15);--glow:rgba(225,29,72,.2);--nav:#ffffffee;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;padding-bottom:80px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 10%,rgba(var(--primary-rgb),.08) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 85% 85%,rgba(244,114,182,.06) 0%,transparent 70%);pointer-events:none;z-index:0;}
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--nav);border-bottom:1px solid var(--border);backdrop-filter:blur(24px);}
+.topbar-logo{font-family:'Unbounded',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:.06em;color:var(--primary);text-shadow:0 0 12px var(--glow);}
+.theme-pill{display:flex;gap:4px;background:var(--bg3);border-radius:20px;padding:4px;border:1px solid var(--border);}
+.theme-dot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:var(--t);}
+.theme-dot.active{border-color:var(--text);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:68px;display:flex;background:var(--nav);border-top:1px solid var(--border);backdrop-filter:blur(30px);z-index:200;padding-bottom:env(safe-area-inset-bottom,0);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:var(--t);position:relative;}
+.nav-icon{font-size:1.35rem;transition:var(--t);}
+.nav-lbl{font-size:.55rem;letter-spacing:.1em;color:var(--text-dim);transition:var(--t);font-weight:600;}
+.nav-btn.active .nav-icon{filter:drop-shadow(0 0 6px var(--primary));transform:translateY(-2px);}
+.nav-btn.active .nav-lbl{color:var(--primary);}
+.nav-btn.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:28px;height:2px;background:var(--primary);border-radius:2px;box-shadow:0 0 8px var(--primary);}
+.tab{display:none;position:relative;z-index:1;padding:14px 14px 20px;animation:tabIn .3s ease;}
+.tab.active{display:block;}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.stitle{font-family:'Unbounded',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  :root {
-    --neon-cyan: #00f5ff;
-    --neon-pink: #ff006e;
-    --neon-purple: #b100ff;
-    --neon-gold: #ffd700;
-    --neon-green: #00ff88;
-    --glass-bg: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.12);
-    --dark: #050510;
-  }
+/* ── FLIP CARD ── */
+.flip-scene{perspective:1200px;height:470px;margin-bottom:18px;cursor:pointer;user-select:none;}
+.flip-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.4,0,.2,1);}
+.flip-card.flipped{transform:rotateY(180deg);}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(160deg,var(--bg2) 0%,var(--bg3) 100%);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px var(--border);}
+.face-back{transform:rotateY(180deg);overflow-y:auto;}
+.cfi{display:flex;flex-direction:column;align-items:center;padding:28px 20px 20px;height:100%;gap:12px;position:relative;}
+.cbg{position:absolute;inset:0;pointer-events:none;}
 
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+/* AURA */
+.aura-wrap{position:relative;width:116px;height:116px;}
+.aura-outer{position:absolute;inset:0;border-radius:50%;animation:auraPulse 2.5s ease-in-out infinite;}
+.aura-spin{position:absolute;inset:-4px;border-radius:50%;animation:auraspin 4s linear infinite;opacity:.35;}
+.aura-photo{position:absolute;inset:6px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2.8rem;overflow:hidden;}
+.aura-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.aura-lbl{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.55rem;letter-spacing:.12em;font-weight:600;text-transform:uppercase;}
+@keyframes auraPulse{0%,100%{box-shadow:0 0 18px var(--ac),0 0 40px var(--ac),0 0 70px rgba(var(--ar),.3)}50%{box-shadow:0 0 28px var(--ac),0 0 60px var(--ac),0 0 100px rgba(var(--ar),.5)}}
+@keyframes auraspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.username{font-family:'Unbounded',sans-serif;font-size:.85rem;font-weight:600;color:var(--text);letter-spacing:.03em;margin-top:18px;}
+.user-role{font-family:'Unbounded',sans-serif;font-size:.72rem;color:var(--primary);letter-spacing:.05em;text-shadow:0 0 8px var(--glow);}
+.user-vibe{font-size:.58rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;font-weight:600;}
+.user-bio{font-size:.72rem;line-height:1.6;color:var(--text-dim);font-style:italic;text-align:center;padding:10px 14px;background:rgba(var(--primary-rgb),.06);border-radius:12px;border-left:2px solid var(--primary);max-width:100%;}
+.flip-hint{margin-top:auto;font-size:.58rem;color:var(--text-dim);letter-spacing:.08em;display:flex;align-items:center;gap:5px;}
 
-  body {
-    background: var(--dark);
-    font-family: 'Rajdhani', sans-serif;
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    touch-action: none;
-  }
+/* BACK */
+.cbi{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.back-row{display:flex;justify-content:space-between;align-items:center;}
+.blbl{font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;}
+.bval{font-family:'Unbounded',sans-serif;font-size:.82rem;color:var(--primary);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{background:rgba(var(--primary-rgb),.1);border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:.62rem;color:var(--primary);letter-spacing:.04em;}
+.stk-prevs{display:flex;gap:8px;}
+.stk-prev{width:48px;height:48px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-direction:column;position:relative;overflow:hidden;}
+.stk-prev-rank{position:absolute;bottom:0;left:0;right:0;font-size:.42rem;text-align:center;background:rgba(0,0,0,.6);padding:1px;color:var(--gold);letter-spacing:.04em;}
+.bar-wrap{background:rgba(255,255,255,.06);border-radius:20px;height:7px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:20px;transition:width 1s ease;}
+.bar-act{background:linear-gradient(90deg,var(--primary),var(--accent));}
+.bar-ach{background:linear-gradient(90deg,var(--gold),#f97316);}
+.rank-box{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(var(--primary-rgb),.07);border-radius:12px;border:1px solid var(--border);}
+.rank-num{font-family:'Unbounded',sans-serif;font-size:1.5rem;color:var(--gold);}
+.rank-sub{font-size:.58rem;color:var(--text-dim);letter-spacing:.06em;}
+.divider{height:1px;background:var(--border);margin:2px 0;}
 
-  /* ===== SCREENS ===== */
-  .screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity .35s, transform .35s; }
-  .screen.hidden { opacity:0; pointer-events:none; transform:scale(0.95); }
+/* ACHIEVEMENTS */
+.ach-list{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+.ach-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;background:var(--card);border:1px solid var(--border);transition:var(--t);position:relative;overflow:hidden;}
+.ach-item.done{border-color:rgba(var(--primary-rgb),.3);}
+.ach-item.done::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);border-radius:0 2px 2px 0;}
+.ach-item.locked{opacity:.4;}
+.ai-icon{font-size:1.4rem;width:32px;text-align:center;flex-shrink:0;}
+.ai-body{flex:1;min-width:0;}
+.ai-name{font-size:.7rem;font-weight:600;letter-spacing:.03em;}
+.ai-desc{font-size:.58rem;color:var(--text-dim);margin-top:2px;line-height:1.4;}
+.ai-chk{font-size:.65rem;flex-shrink:0;color:var(--primary);font-weight:700;}
 
-  /* BG grid */
-  body::before {
-    content:''; position:fixed; inset:0; z-index:0;
-    background:
-      linear-gradient(rgba(0,245,255,.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,245,255,.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events:none;
-  }
-  body::after {
-    content:''; position:fixed; inset:0; z-index:0;
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(177,0,255,.15) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0,245,255,.1) 0%, transparent 60%);
-    pointer-events:none;
-  }
+/* STICKERS */
+.leg-banner{border-radius:14px;padding:12px 16px;margin-bottom:14px;display:none;text-align:center;font-family:'Unbounded',sans-serif;font-size:.72rem;letter-spacing:.06em;position:relative;overflow:hidden;}
+.leg-banner.show{display:block;}
+.leg-banner.legend-s{background:linear-gradient(135deg,#1c1a0a,#2a2000,#1c1a0a);border:1px solid var(--gold);color:var(--gold);box-shadow:0 0 24px rgba(245,158,11,.2);}
+.leg-banner.god-s{background:linear-gradient(135deg,#f59e0b,#fbbf24,#f59e0b);background-size:200% 200%;border:none;color:#1a0a00;animation:godShine 2s ease infinite;}
+@keyframes godShine{0%,100%{background-position:0% 50%;filter:brightness(1)}50%{background-position:100% 50%;filter:brightness(1.15)}}
+.sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+@media(min-width:400px){.sticker-grid{grid-template-columns:repeat(5,1fr);}}
+.sc{aspect-ratio:1;border-radius:13px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px;cursor:pointer;transition:var(--t);position:relative;overflow:hidden;}
+.sc:active{transform:scale(.95);}
+.sc.empty{opacity:.18;cursor:default;pointer-events:none;}
+.sc.top1{border:2px solid #f59e0b;box-shadow:0 0 16px rgba(245,158,11,.4),0 0 32px rgba(245,158,11,.2);animation:legGlow 2.5s ease-in-out infinite;}
+.sc.top2{border:2px solid #94a3b8;box-shadow:0 0 12px rgba(148,163,184,.35);animation:legGlow 2.5s ease-in-out infinite;}
+.sc.top3{border:2px solid #b45309;box-shadow:0 0 10px rgba(180,83,9,.3);animation:legGlow 2.5s ease-in-out infinite;}
+@keyframes legGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.1)}}
+.sc-medal{position:absolute;top:2px;right:3px;font-size:.65rem;}
+.sc-emo{font-size:1.55rem;line-height:1;}
+.sc-name{font-size:.38rem;color:var(--text-dim);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-cnt{font-size:.48rem;color:var(--primary);font-weight:700;}
+.sc-opr{font-size:.36rem;color:var(--text-dim);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-  /* ===== MENU ===== */
-  #menu { z-index:10; }
-  .logo-wrap { text-align:center; margin-bottom:30px; }
-  .logo-title {
-    font-family:'Orbitron', monospace; font-size:clamp(28px,8vw,52px); font-weight:900;
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    filter: drop-shadow(0 0 20px rgba(0,245,255,.6));
-    letter-spacing:2px; line-height:1.1;
-  }
-  .logo-sub {
-    font-family:'Orbitron', monospace; font-size:clamp(10px,3vw,14px); color:var(--neon-gold);
-    letter-spacing:6px; margin-top:6px; opacity:.85;
-    text-shadow: 0 0 12px var(--neon-gold);
-  }
-
-  .blade-preview {
-    width:100px; height:100px; margin:0 auto 20px;
-    position:relative; display:flex; align-items:center; justify-content:center;
-  }
-  .blade-preview canvas { width:100%; height:100%; }
-
-  .menu-btn {
-    width:240px; padding:14px 24px; margin:8px 0;
-    border-radius:14px; border:1px solid var(--glass-border);
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    color:#fff; font-family:'Orbitron', monospace; font-size:14px; font-weight:700;
-    letter-spacing:2px; cursor:pointer;
-    position:relative; overflow:hidden;
-    transition: transform .15s, box-shadow .15s;
-  }
-  .menu-btn::before {
-    content:''; position:absolute; inset:0;
-    background: linear-gradient(135deg, rgba(0,245,255,.15), rgba(177,0,255,.1));
-    opacity:0; transition:opacity .2s;
-  }
-  .menu-btn:active { transform:scale(0.96); }
-  .menu-btn:hover::before { opacity:1; }
-  .menu-btn.primary { border-color:var(--neon-cyan); box-shadow:0 0 20px rgba(0,245,255,.25), inset 0 0 20px rgba(0,245,255,.05); }
-  .menu-btn.gold { border-color:var(--neon-gold); box-shadow:0 0 20px rgba(255,215,0,.25), inset 0 0 20px rgba(255,215,0,.05); color:var(--neon-gold); }
-  .menu-btn.purple { border-color:var(--neon-purple); box-shadow:0 0 20px rgba(177,0,255,.25); }
-
-  .coin-display {
-    display:flex; align-items:center; gap:8px;
-    background: rgba(255,215,0,.08); border:1px solid rgba(255,215,0,.3);
-    border-radius:30px; padding:8px 18px; margin:12px 0;
-    font-family:'Orbitron', monospace; font-size:13px; color:var(--neon-gold);
-    text-shadow:0 0 10px var(--neon-gold);
-    box-shadow:0 0 15px rgba(255,215,0,.15);
-  }
-  .coin-icon { font-size:18px; }
-
-  /* ===== GAME SCREEN ===== */
-  #game { z-index:5; }
-  #gameCanvas {
-    position:absolute; inset:0; width:100%; height:100%;
-    touch-action:none;
-  }
-
-  .hud {
-    position:absolute; top:0; left:0; right:0;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 16px 10px;
-    background:linear-gradient(to bottom, rgba(5,5,16,.8), transparent);
-    z-index:20; pointer-events:none;
-  }
-  .hud-score {
-    font-family:'Orbitron', monospace; font-size:clamp(16px,5vw,22px); font-weight:900;
-    color:var(--neon-cyan); text-shadow:0 0 15px var(--neon-cyan);
-  }
-  .hud-coins {
-    font-family:'Orbitron', monospace; font-size:clamp(12px,3.5vw,15px);
-    color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold);
-    display:flex; align-items:center; gap:5px;
-  }
-  .hud-lives { display:flex; gap:5px; }
-  .heart { font-size:18px; transition:transform .3s; }
-  .heart.lost { opacity:.2; transform:scale(0.7); }
-
-  .pause-btn {
-    position:absolute; bottom:20px; right:16px; z-index:20;
-    width:44px; height:44px; border-radius:12px;
-    background:var(--glass-bg); border:1px solid var(--glass-border);
-    backdrop-filter:blur(10px); color:#fff; font-size:18px;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-
-  /* combo flash */
-  .combo-flash {
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    font-family:'Orbitron', monospace; font-size:clamp(24px,8vw,48px); font-weight:900;
-    pointer-events:none; z-index:30; text-align:center;
-    opacity:0; animation:comboAnim .7s ease-out forwards;
-  }
-  @keyframes comboAnim {
-    0%{opacity:0;transform:translate(-50%,-60%) scale(.5);}
-    30%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}
-    70%{opacity:1;transform:translate(-50%,-50%) scale(1);}
-    100%{opacity:0;transform:translate(-50%,-40%) scale(.9);}
-  }
-
-  /* ===== GAME OVER ===== */
-  #gameover { z-index:15; }
-  .go-panel {
-    background:rgba(5,5,16,.85); border:1px solid var(--glass-border);
-    border-radius:24px; padding:32px 28px; width:min(320px,90vw); text-align:center;
-    backdrop-filter:blur(30px);
-    box-shadow:0 0 60px rgba(255,0,110,.2), inset 0 0 40px rgba(0,0,0,.4);
-  }
-  .go-title {
-    font-family:'Orbitron', monospace; font-size:clamp(22px,7vw,32px); font-weight:900;
-    color:var(--neon-pink); text-shadow:0 0 20px var(--neon-pink);
-    margin-bottom:20px;
-  }
-  .go-stat { color:rgba(255,255,255,.7); font-size:15px; margin:6px 0; }
-  .go-stat span { color:#fff; font-weight:700; }
-  .go-earned { color:var(--neon-gold); font-size:17px; margin:14px 0; font-weight:700; }
-
-  /* ===== SHOP ===== */
-  #shop { z-index:10; }
-  .shop-header {
-    font-family:'Orbitron', monospace; font-size:clamp(18px,5vw,26px); font-weight:900;
-    color:var(--neon-cyan); text-shadow:0 0 15px var(--neon-cyan);
-    margin-bottom:6px; text-align:center;
-  }
-  .shop-sub { color:rgba(255,255,255,.5); font-size:13px; margin-bottom:20px; text-align:center; }
-
-  .blade-grid {
-    display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
-    width:min(360px,96vw); max-height:55vh; overflow-y:auto;
-    padding:4px; scrollbar-width:none;
-  }
-  .blade-grid::-webkit-scrollbar { display:none; }
-
-  .blade-card {
-    background:var(--glass-bg); border:1px solid var(--glass-border);
-    border-radius:14px; padding:14px 12px; text-align:center;
-    cursor:pointer; transition:transform .15s, box-shadow .2s;
-    position:relative; overflow:hidden;
-  }
-  .blade-card:active { transform:scale(.97); }
-  .blade-card.equipped { border-color:var(--neon-cyan); box-shadow:0 0 20px rgba(0,245,255,.3); }
-  .blade-card.locked { opacity:.7; }
-
-  .blade-card-canvas { width:60px; height:60px; display:block; margin:0 auto 8px; }
-  .blade-name { font-size:13px; font-weight:700; color:#fff; margin-bottom:3px; }
-  .blade-rarity { font-size:10px; letter-spacing:1px; font-family:'Orbitron', monospace; }
-  .blade-price { font-size:11px; color:var(--neon-gold); margin-top:5px; }
-  .blade-badge {
-    position:absolute; top:8px; right:8px; font-size:10px;
-    background:rgba(0,245,255,.2); border:1px solid var(--neon-cyan);
-    border-radius:6px; padding:2px 6px; color:var(--neon-cyan);
-    font-family:'Orbitron', monospace;
-  }
-
-  .rarity-common { color:#aaa; }
-  .rarity-uncommon { color:var(--neon-green); }
-  .rarity-rare { color:#4fc3ff; }
-  .rarity-epic { color:var(--neon-purple); }
-  .rarity-legendary { color:var(--neon-gold); }
-
-  /* ===== CASES ===== */
-  #cases { z-index:10; }
-  .case-grid { display:flex; flex-direction:column; gap:14px; width:min(320px,90vw); }
-  .case-card {
-    background:var(--glass-bg); border:1px solid var(--glass-border);
-    border-radius:18px; padding:18px; display:flex; align-items:center; gap:16px;
-    cursor:pointer; transition:transform .15s;
-    backdrop-filter:blur(10px);
-  }
-  .case-card:active { transform:scale(.97); }
-  .case-icon { font-size:40px; filter:drop-shadow(0 0 10px currentColor); flex-shrink:0; }
-  .case-info h3 { font-family:'Orbitron', monospace; font-size:14px; font-weight:700; color:#fff; margin-bottom:4px; }
-  .case-info p { font-size:12px; color:rgba(255,255,255,.5); }
-  .case-price { margin-left:auto; text-align:right; flex-shrink:0; }
-  .case-price span { font-family:'Orbitron', monospace; font-size:15px; color:var(--neon-gold); font-weight:700; text-shadow:0 0 8px var(--neon-gold); }
-
-  /* Case open overlay */
-  #caseOpen {
-    position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.9);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    backdrop-filter:blur(20px);
-  }
-  #caseOpen.hidden { display:none; }
-  .case-reveal {
-    text-align:center; animation:revealPop .6s cubic-bezier(.34,1.56,.64,1) forwards;
-  }
-  @keyframes revealPop {
-    0%{opacity:0;transform:scale(.3) rotate(-10deg);}
-    100%{opacity:1;transform:scale(1) rotate(0deg);}
-  }
-  .case-reveal h2 {
-    font-family:'Orbitron', monospace; font-size:clamp(16px,5vw,24px);
-    margin-top:16px; color:#fff;
-  }
-  .case-reveal p { color:rgba(255,255,255,.6); margin:6px 0 20px; font-size:14px; }
-  .reveal-canvas { width:120px; height:120px; display:block; margin:0 auto; }
-
-  /* Back btn */
-  .back-btn {
-    position:absolute; top:16px; left:16px; z-index:20;
-    width:40px; height:40px; border-radius:10px;
-    background:var(--glass-bg); border:1px solid var(--glass-border);
-    backdrop-filter:blur(10px); color:#fff; font-size:20px;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-
-  /* floating coins anim */
-  .float-coin {
-    position:fixed; pointer-events:none; z-index:100;
-    font-family:'Orbitron', monospace; font-size:14px; font-weight:700;
-    color:var(--neon-gold); text-shadow:0 0 10px var(--neon-gold);
-    animation:floatUp 1.2s ease-out forwards;
-  }
-  @keyframes floatUp {
-    0%{opacity:1;transform:translateY(0) scale(1);}
-    100%{opacity:0;transform:translateY(-80px) scale(.8);}
-  }
-
-  /* Score popup */
-  .score-pop {
-    position:fixed; pointer-events:none; z-index:99;
-    font-family:'Orbitron', monospace; font-size:clamp(14px,4vw,20px); font-weight:900;
-    animation:scorePop 0.8s ease-out forwards;
-  }
-  @keyframes scorePop {
-    0%{opacity:1;transform:translateY(0) scale(1);}
-    100%{opacity:0;transform:translateY(-60px) scale(.7);}
-  }
-
-  .neon-divider {
-    width:200px; height:1px; margin:12px auto;
-    background:linear-gradient(to right, transparent, var(--neon-cyan), var(--neon-purple), transparent);
-    opacity:.5;
-  }
+/* TAROT */
+.tarot-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:4px;}
+.gnome-scene{position:relative;width:150px;height:155px;margin:0 auto;cursor:pointer;transition:var(--t);}
+.gnome-body{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;animation:gnomeBob 2.8s ease-in-out infinite;}
+@keyframes gnomeBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-7px)}}
+.gnome-hat{font-size:2.2rem;line-height:1;margin-bottom:-6px;filter:drop-shadow(0 0 8px rgba(var(--primary-rgb),.5));}
+.gnome-face{font-size:2.6rem;line-height:1;}
+.gc-l,.gc-r{position:absolute;bottom:8px;width:36px;height:54px;border-radius:5px;background:linear-gradient(135deg,#1a0040,#2d006a);border:1px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 4px 14px rgba(0,0,0,.5),0 0 10px rgba(var(--primary-rgb),.3);}
+.gc-l{left:4px;animation:cwL 2.8s ease-in-out infinite;}
+.gc-r{right:4px;animation:cwR 2.8s ease-in-out infinite;}
+@keyframes cwL{0%,100%{transform:rotate(-15deg) translateY(0)}50%{transform:rotate(-12deg) translateY(-4px)}}
+@keyframes cwR{0%,100%{transform:rotate(15deg) translateY(0)}50%{transform:rotate(12deg) translateY(-4px)}}
+.gnome-stars{position:absolute;top:0;left:0;right:0;text-align:center;font-size:.9rem;animation:twinkle 2s ease-in-out infinite;letter-spacing:4px;}
+@keyframes twinkle{0%,100%{opacity:.6}50%{opacity:1}}
+.cd-box{width:100%;text-align:center;padding:18px;border-radius:14px;background:var(--card);border:1px solid var(--border);}
+.cd-lbl{font-size:.62rem;color:var(--text-dim);letter-spacing:.1em;margin-bottom:6px;}
+.cd-time{font-family:'Unbounded',sans-serif;font-size:1.9rem;font-weight:600;color:var(--primary);text-shadow:0 0 12px var(--glow);}
+.draw-btn{padding:13px 36px;background:linear-gradient(135deg,rgba(var(--primary-rgb),.15),rgba(244,114,182,.1));border:1px solid var(--primary);border-radius:30px;color:var(--primary);font-family:'Unbounded',sans-serif;font-size:.68rem;letter-spacing:.1em;transition:var(--t);box-shadow:0 0 20px rgba(var(--primary-rgb),.15);}
+.draw-btn:hover:not(:disabled){box-shadow:0 0 30px rgba(var(--primary-rgb),.35);transform:scale(1.03);}
+.draw-btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important;}
+.tarot-res{display:none;width:100%;animation:revCard .7s cubic-bezier(.4,0,.2,1) both;}
+.tarot-res.show{display:block;}
+@keyframes revCard{0%{opacity:0;transform:rotateY(-90deg) scale(.8)}60%{transform:rotateY(8deg) scale(1.02)}100%{opacity:1;transform:rotateY(0) scale(1)}}
+.drawn-face{border-radius:18px;padding:24px 20px;text-align:center;background:linear-gradient(160deg,#0d0020,#1a0040,#0a0018);border:1px solid var(--primary);box-shadow:0 0 40px rgba(var(--primary-rgb),.2),inset 0 0 40px rgba(0,0,0,.4);}
+[data-theme="t3"] .drawn-face,[data-theme="t4"] .drawn-face{background:linear-gradient(160deg,#2d0050,#4a0080,#2d0050);}
+.card-sym{font-size:3.2rem;display:block;margin-bottom:4px;}
+.card-rom{font-size:.58rem;letter-spacing:.2em;color:var(--gold);font-weight:600;}
+.card-name-d{font-family:'Unbounded',sans-serif;font-size:.95rem;color:#fff;margin:8px 0 4px;text-shadow:0 0 10px var(--primary);}
+.card-kw{font-size:.6rem;color:rgba(255,255,255,.45);letter-spacing:.08em;margin-bottom:14px;}
+.card-pred{font-size:.72rem;line-height:1.65;color:rgba(255,255,255,.82);font-style:italic;padding:12px 14px;background:rgba(255,255,255,.05);border-radius:10px;border-left:2px solid var(--gold);}
+#toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--primary);border-radius:30px;padding:8px 20px;font-size:.68rem;color:var(--primary);letter-spacing:.06em;z-index:9999;white-space:nowrap;backdrop-filter:blur(20px);box-shadow:0 0 20px rgba(var(--primary-rgb),.3);opacity:0;transition:opacity .3s ease;pointer-events:none;}
 </style>
 </head>
-<body>
+<body data-theme="t1">
 
-<!-- ============ MENU ============ -->
-<div id="menu" class="screen">
-  <div class="logo-wrap">
-    <div class="logo-title">BENINI<br>NINJA</div>
-    <div class="logo-sub">⚡ NEON BLADE ⚡</div>
+<div class="topbar">
+  <div class="topbar-logo">✦ Архів Беніні</div>
+  <div class="theme-pill">
+    <div class="theme-dot active" style="background:#a78bfa" onclick="setTheme('t1',this)"></div>
+    <div class="theme-dot" style="background:#38bdf8" onclick="setTheme('t2',this)"></div>
+    <div class="theme-dot" style="background:#92400e" onclick="setTheme('t3',this)"></div>
+    <div class="theme-dot" style="background:#e11d48" onclick="setTheme('t4',this)"></div>
   </div>
-  <canvas id="menuBladeCanvas" width="120" height="120" style="width:120px;height:120px;margin-bottom:16px;"></canvas>
-  <div class="coin-display">
-    <span class="coin-icon">🪙</span>
-    <span id="menuCoinCount">0</span> Benini Coins
-  </div>
-  <button class="menu-btn primary" onclick="startGame()">▶ ГРАТИ</button>
-  <button class="menu-btn gold" onclick="showScreen('cases')">📦 КЕЙСИ</button>
-  <button class="menu-btn purple" onclick="showScreen('shop')">⚔️ КЛИНКИ</button>
-  <div class="neon-divider"></div>
-  <div style="color:rgba(255,255,255,.35);font-size:11px;font-family:'Orbitron',monospace;letter-spacing:2px;">v1.0 — BENINI STUDIO</div>
 </div>
 
-<!-- ============ GAME ============ -->
-<div id="game" class="screen hidden">
-  <canvas id="gameCanvas"></canvas>
-  <div class="hud">
-    <div class="hud-score">
-      <div style="font-size:10px;opacity:.6;letter-spacing:2px;margin-bottom:2px;">SCORE</div>
-      <div id="scoreDisplay">0</div>
+<div id="app">
+
+  <!-- ── ПРОФІЛЬ ── -->
+  <div class="tab active" id="tab-profile">
+    <div class="flip-scene" onclick="flipCard()">
+      <div class="flip-card" id="flipCard">
+
+        <div class="face">
+          <div class="cfi">
+            <div class="cbg" id="cbg"></div>
+            <div class="aura-wrap">
+              <div class="aura-spin" id="auraSpin"></div>
+              <div class="aura-outer" id="auraOuter"></div>
+              <div class="aura-photo" id="auraPhoto">🧙‍♀️</div>
+              <div class="aura-lbl" id="auraLbl">Аура</div>
+            </div>
+            <div class="username" id="userName">@username</div>
+            <div class="user-role" id="userRole">Завантаження…</div>
+            <div class="user-vibe" id="userVibe">···</div>
+            <div class="user-bio" id="userBio">···</div>
+            <div class="flip-hint">↺ Натисни для статистики</div>
+          </div>
+        </div>
+
+        <div class="face face-back">
+          <div class="cbi">
+            <div class="stitle">Статистика за місяць</div>
+            <div class="back-row"><span class="blbl">ПОВІДОМЛЕНЬ</span><span class="bval" id="bMsgs">0</span></div>
+            <div><div class="blbl" style="margin-bottom:6px">ТОП СЛОВА</div><div class="chips" id="bWords"></div></div>
+            <div><div class="blbl" style="margin-bottom:6px">ТОП СТІКЕРИ</div><div class="stk-prevs" id="bStickers"></div></div>
+            <div>
+              <div class="back-row" style="margin-bottom:5px"><span class="blbl">АКТИВНІСТЬ В ЧАТІ</span><span class="bval" id="bAct">—</span></div>
+              <div class="bar-wrap"><div class="bar-fill bar-act" id="actBar" style="width:0%"></div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="stitle">Рейтинг ачівок</div>
+            <div class="rank-box">
+              <div class="rank-num" id="bRank">#?</div>
+              <div><div class="blbl">МІСЦЕ В ЧАТІ</div><div class="rank-sub">за кількістю досягнень</div></div>
+            </div>
+            <div>
+              <div class="back-row" style="margin-bottom:5px"><span class="blbl">ВИКОНАНО АЧІВОК</span><span class="bval" id="bAchPct">0%</span></div>
+              <div class="bar-wrap"><div class="bar-fill bar-ach" id="achBar" style="width:0%"></div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="flip-hint" style="margin-top:0">↺ Назад</div>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="hud-lives" id="livesDisplay"></div>
-    <div class="hud-coins">🪙 <span id="sessionCoins">0</span></div>
+
+    <div class="stitle">Досягнення</div>
+    <div class="ach-list" id="achList"></div>
   </div>
-  <button class="pause-btn" onclick="togglePause()">⏸</button>
+
+  <!-- ── СТІКЕРИ ── -->
+  <div class="tab" id="tab-stickers">
+    <div class="leg-banner" id="legBanner"></div>
+    <div class="stitle">Сховище стікерів · <span id="sCount">0</span> з 100</div>
+    <div class="sticker-grid" id="sGrid"></div>
+  </div>
+
+  <!-- ── ТАРО ── -->
+  <div class="tab" id="tab-tarot">
+    <div class="stitle">Таро Гнома</div>
+    <div class="tarot-wrap">
+      <div class="gnome-scene" id="gnomeScene" onclick="gnomePoke()">
+        <div class="gnome-stars">✦ ✧ ✦</div>
+        <div class="gc-l">🂠</div>
+        <div class="gc-r">🂠</div>
+        <div class="gnome-body">
+          <div class="gnome-hat">🎩</div>
+          <div class="gnome-face">🧙‍♂️</div>
+        </div>
+      </div>
+      <div class="cd-box" id="cdBox" style="display:none">
+        <div class="cd-lbl">НАСТУПНЕ ЧИТАННЯ ЧЕРЕЗ</div>
+        <div class="cd-time" id="cdTime">23:59:59</div>
+      </div>
+      <button class="draw-btn" id="drawBtn" onclick="drawTarot()">✦ Відкрити долю ✦</button>
+      <div class="tarot-res" id="tarotRes"></div>
+    </div>
+  </div>
+
 </div>
 
-<!-- ============ GAME OVER ============ -->
-<div id="gameover" class="screen hidden">
-  <div class="go-panel">
-    <div class="go-title">GAME OVER</div>
-    <div class="neon-divider"></div>
-    <div class="go-stat">Рахунок: <span id="finalScore">0</span></div>
-    <div class="go-stat">Зрізано фруктів: <span id="finalFruits">0</span></div>
-    <div class="go-stat">Макс. комбо: <span id="finalCombo">0</span>x</div>
-    <div class="go-earned">🪙 +<span id="earnedCoins">0</span> Benini Coins</div>
-    <div class="neon-divider"></div>
-    <button class="menu-btn primary" onclick="startGame()" style="width:100%;margin:6px 0;">▶ ЩЕ РАЗ</button>
-    <button class="menu-btn" onclick="showScreen('menu')" style="width:100%;margin:6px 0;">🏠 МЕНЮ</button>
-  </div>
-</div>
+<nav class="bottom-nav">
+  <div class="nav-btn active" data-tab="profile" onclick="switchTab('profile')"><span class="nav-icon">🪄</span><span class="nav-lbl">ПРОФІЛЬ</span></div>
+  <div class="nav-btn" data-tab="stickers" onclick="switchTab('stickers')"><span class="nav-icon">📦</span><span class="nav-lbl">СТІКЕРИ</span></div>
+  <div class="nav-btn" data-tab="tarot" onclick="switchTab('tarot')"><span class="nav-icon">🔮</span><span class="nav-lbl">ТАРО</span></div>
+</nav>
 
-<!-- ============ SHOP ============ -->
-<div id="shop" class="screen hidden">
-  <button class="back-btn" onclick="showScreen('menu')">←</button>
-  <div class="shop-header">⚔️ КЛИНКИ</div>
-  <div class="shop-sub">Обери свій стиль бою</div>
-  <div class="coin-display" style="margin-bottom:16px;">
-    🪙 <span id="shopCoinCount">0</span> Benini Coins
-  </div>
-  <div class="blade-grid" id="bladeGrid"></div>
-</div>
-
-<!-- ============ CASES ============ -->
-<div id="cases" class="screen hidden">
-  <button class="back-btn" onclick="showScreen('menu')">←</button>
-  <div class="shop-header" style="margin-top:20px;">📦 КЕЙСИ</div>
-  <div class="shop-sub">Відкрий унікальний клинок</div>
-  <div class="coin-display" style="margin-bottom:16px;">
-    🪙 <span id="casesCoinCount">0</span> Benini Coins
-  </div>
-  <div class="case-grid" id="caseGrid"></div>
-</div>
-
-<!-- ============ CASE OPEN ============ -->
-<div id="caseOpen" class="hidden">
-  <div class="case-reveal" id="caseReveal">
-    <canvas class="reveal-canvas" id="revealCanvas" width="240" height="240"></canvas>
-    <h2 id="revealName">—</h2>
-    <p id="revealRarity">—</p>
-    <button class="menu-btn primary" onclick="closeCaseReveal()" style="width:220px;">✓ ЗАБРАТИ</button>
-  </div>
-</div>
+<div id="toast"></div>
 
 <script>
-// ========== STATE ==========
-const SAVE_KEY = 'benini_save';
-let state = { coins:0, ownedBlades:['plasma'], equippedBlade:'plasma', highScore:0 };
+/* ════════════════════════════════════════
+   MOCK DATA — замінити на реальний API
+   ════════════════════════════════════════ */
+const MOCK = {
+  user: {
+    id: 42,
+    username: "@olenka_vid",
+    photo_url: null,
+    photo_emoji: "🧙‍♀️",
+    role: "Тихий Провидець",
+    vibe: "Лімінальний",
+    bio: "З'являється після опівночі, цитує Сковороду між мемами і зникає так само несподівано, як і з'явилась.",
+    monthly_messages: 1340,
+    top_words: ["сенс", "взагалі", "чому"],
+    activity_percentile: 72,
+    ach_rank: 2,
+    /* Поведінкові бали 0-100 для алгоритму аури */
+    score_toxic:   8,
+    score_helpful: 45,
+    score_calm:    60,
+    score_funny:   55,
+    score_weird:   78,
+    score_active:  72,
+    unlocked: [
+      "night_owl","philosopher","talkative","the_chosen",
+      "sticker_lord","word_smith","deep_thinker","comeback",
+      "question_master","lurker_slayer","emote_king","consistent"
+    ],
+  },
+  stickers: [
+    {id:1, emoji:"😭",name:"Плач",        opener:"@olenka_vid", count:142},
+    {id:2, emoji:"🔥",name:"Вогонь",      opener:"@vasyl_meme", count:118},
+    {id:3, emoji:"🗿",name:"Моаі",        opener:"@olenka_vid", count:97},
+    {id:4, emoji:"💀",name:"Череп",       opener:"@vasyl_meme", count:88},
+    {id:5, emoji:"🤡",name:"Клоун",       opener:"@petro_lol",  count:76},
+    {id:6, emoji:"🦆",name:"Качечка",     opener:"@daria_q",    count:65},
+    {id:7, emoji:"🧿",name:"Оберіг",      opener:"@olenka_vid", count:54},
+    {id:8, emoji:"🌚",name:"Місяць",      opener:"@vasyl_meme", count:49},
+    {id:9, emoji:"💅",name:"Нігтики",     opener:"@maryna_v",   count:44},
+    {id:10,emoji:"🫠",name:"Плавлюся",    opener:"@olenka_vid", count:40},
+    {id:11,emoji:"🦋",name:"Метелик",     opener:"@daria_q",    count:37},
+    {id:12,emoji:"🎭",name:"Театр",       opener:"@petro_lol",  count:33},
+    {id:13,emoji:"🌿",name:"Травичка",    opener:"@olenka_vid", count:29},
+    {id:14,emoji:"⚡",name:"Блискавка",   opener:"@vasyl_meme", count:27},
+    {id:15,emoji:"🫶",name:"Серденько",   opener:"@maryna_v",   count:25},
+    {id:16,emoji:"🐸",name:"Жабка",       opener:"@daria_q",    count:22},
+    {id:17,emoji:"🌙",name:"Місяць",      opener:"@olenka_vid", count:20},
+    {id:18,emoji:"🎪",name:"Цирк",        opener:"@petro_lol",  count:18},
+    {id:19,emoji:"🧠",name:"Мозок",       opener:"@vasyl_meme", count:16},
+    {id:20,emoji:"🕯️",name:"Свічка",     opener:"@olenka_vid", count:14},
+    {id:21,emoji:"🪄",name:"Паличка",     opener:"@daria_q",    count:12},
+    {id:22,emoji:"🦄",name:"Єдиноріг",    opener:"@maryna_v",   count:11},
+    {id:23,emoji:"🎲",name:"Кубик",       opener:"@petro_lol",  count:10},
+    {id:24,emoji:"🧪",name:"Колба",       opener:"@vasyl_meme", count:9},
+    {id:25,emoji:"🌸",name:"Сакура",      opener:"@olenka_vid", count:8},
+    {id:26,emoji:"🗝️",name:"Ключик",     opener:"@daria_q",    count:7},
+    {id:27,emoji:"🎯",name:"Ціль",        opener:"@petro_lol",  count:6},
+    {id:28,emoji:"🌊",name:"Хвиля",       opener:"@maryna_v",   count:5},
+    {id:29,emoji:"🧲",name:"Магніт",      opener:"@vasyl_meme", count:4},
+    {id:30,emoji:"🫧",name:"Бульбашки",   opener:"@olenka_vid", count:3},
+  ],
+  opener_ranking: [
+    {username:"@olenka_vid",opened:9},
+    {username:"@vasyl_meme",opened:7},
+    {username:"@daria_q",   opened:5},
+    {username:"@petro_lol", opened:5},
+    {username:"@maryna_v",  opened:4},
+  ],
+};
 
-function saveState() { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
-function loadState() {
-  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if(s) state = {...state,...s}; } catch(e){}
+/* ════════════════════════════════════════
+   АЛГОРИТМ АУРИ
+   Реальний — на основі 6 вимірів поведінки.
+   Кожен вимір має вагу. Знаходимо домінант.
+   ════════════════════════════════════════ */
+const AURA = {
+  red:    {c:"#ff4d4d",r:"255,77,77",   lbl:"Токсична Аура",    emoji:"🔴"},
+  gold:   {c:"#f59e0b",r:"245,158,11",  lbl:"Золота Аура",      emoji:"🟡"},
+  blue:   {c:"#60a5fa",r:"96,165,250",  lbl:"Синя Аура",        emoji:"🔵"},
+  green:  {c:"#34d399",r:"52,211,153",  lbl:"Зелена Аура",      emoji:"🟢"},
+  purple: {c:"#a78bfa",r:"167,139,250", lbl:"Пурпурна Аура",    emoji:"🟣"},
+  orange: {c:"#fb923c",r:"251,146,60",  lbl:"Вогняна Аура",     emoji:"🟠"},
+  white:  {c:"#e2e8f0",r:"226,232,240", lbl:"Нейтральна Аура",  emoji:"⚪"},
+};
+
+function calcAura(u) {
+  /* Правило 1: Якщо токсичність > 65 і є домінантом — red */
+  if (u.score_toxic > 65) {
+    const rest = [u.score_helpful,u.score_calm,u.score_funny,u.score_weird,u.score_active];
+    if (u.score_toxic > Math.max(...rest)) return "red";
+  }
+  /* Зважений скор */
+  const dims = [
+    {key:"gold",   v: u.score_helpful * 1.1},
+    {key:"blue",   v: u.score_calm    * 1.0 * (u.score_active < 30 ? 1.4 : 1)},
+    {key:"green",  v: u.score_funny   * 1.0 + u.score_active * 0.4},
+    {key:"purple", v: u.score_weird   * 1.15},
+    {key:"orange", v: u.score_active  * 1.0 * (u.score_funny < 25 ? 0.6 : 1)},
+    {key:"red",    v: u.score_toxic   * 1.2},
+  ];
+  dims.sort((a,b)=>b.v-a.v);
+  /* Якщо різниця між топ-1 і топ-2 менше 12 — нейтральна */
+  if (dims[0].v - dims[1].v < 12) return "white";
+  return dims[0].key;
 }
-loadState();
 
-// ========== BLADES ==========
-const BLADES = [
-  { id:'plasma',    name:'Plasma Edge',   rarity:'common',    price:0,     color:'#00f5ff', glow:'#00f5ff', trail:'cyan',    effect:'none',     icon:'⚡' },
-  { id:'crimson',   name:'Crimson Fang',  rarity:'uncommon',  price:150,   color:'#ff3366', glow:'#ff0044', trail:'red',     effect:'sparks',   icon:'🔥' },
-  { id:'emerald',   name:'Emerald Viper', rarity:'uncommon',  price:200,   color:'#00ff88', glow:'#00ff44', trail:'green',   effect:'leaves',   icon:'🌿' },
-  { id:'phantom',   name:'Phantom Void',  rarity:'rare',      price:400,   color:'#b100ff', glow:'#8800cc', trail:'purple',  effect:'shadow',   icon:'👻' },
-  { id:'solar',     name:'Solar Fury',    rarity:'rare',      price:500,   color:'#ffaa00', glow:'#ff8800', trail:'orange',  effect:'fire',     icon:'☀️' },
-  { id:'frost',     name:'Frost Shard',   rarity:'epic',      price:800,   color:'#aaddff', glow:'#88ccff', trail:'ice',     effect:'ice',      icon:'❄️' },
-  { id:'thunder',   name:'Thunder God',   rarity:'epic',      price:900,   color:'#ffe600', glow:'#ffcc00', trail:'yellow',  effect:'electric', icon:'⚡' },
-  { id:'shadow',    name:'Shadow Reaper', rarity:'epic',      price:1000,  color:'#ff00aa', glow:'#cc0088', trail:'pink',    effect:'dark',     icon:'💀' },
-  { id:'cosmic',    name:'Cosmic Rift',   rarity:'legendary', price:1500,  color:'#ffffff', glow:'#aaaaff', trail:'rainbow', effect:'stars',    icon:'🌌' },
-  { id:'benini',    name:'Benini Prime',  rarity:'legendary', price:2000,  color:'#ffd700', glow:'#ffaa00', trail:'gold',    effect:'coins',    icon:'👑' },
+/* ════════════════════════════════════════
+   22 АРКАНИ
+   ════════════════════════════════════════ */
+const ARCANA = [
+  {num:"0",   name:"Блазень",          sym:"🤹", kw:"Початок · Спонтанність · Довіра"},
+  {num:"I",   name:"Маг",              sym:"🪄", kw:"Сила волі · Майстерність · Дія"},
+  {num:"II",  name:"Жриця",           sym:"🌙", kw:"Інтуїція · Таємниця · Знання"},
+  {num:"III", name:"Цариця",          sym:"🌸", kw:"Родючість · Природа · Достаток"},
+  {num:"IV",  name:"Цар",             sym:"👑", kw:"Авторитет · Структура · Стабільність"},
+  {num:"V",   name:"Жрець",           sym:"⛪", kw:"Традиція · Мудрість · Наставництво"},
+  {num:"VI",  name:"Закохані",        sym:"💕", kw:"Любов · Вибір · Гармонія"},
+  {num:"VII", name:"Колісниця",       sym:"⚡", kw:"Перемога · Воля · Рух"},
+  {num:"VIII",name:"Сила",            sym:"🦁", kw:"Мужність · Терпіння · Внутрішня сила"},
+  {num:"IX",  name:"Відлюдник",       sym:"🕯️", kw:"Усамітнення · Мудрість · Роздуми"},
+  {num:"X",   name:"Колесо Фортуни",  sym:"🎡", kw:"Цикли · Доля · Удача"},
+  {num:"XI",  name:"Справедливість",  sym:"⚖️", kw:"Правда · Баланс · Закон"},
+  {num:"XII", name:"Повішений",       sym:"🙃", kw:"Пауза · Нова перспектива · Прийняття"},
+  {num:"XIII",name:"Смерть",          sym:"🦋", kw:"Трансформація · Кінець · Перехід"},
+  {num:"XIV", name:"Поміркованість",  sym:"🌊", kw:"Рівновага · Терпіння · Ціленість"},
+  {num:"XV",  name:"Диявол",          sym:"🔗", kw:"Тінь · Залежність · Матеріалізм"},
+  {num:"XVI", name:"Вежа",            sym:"🗼", kw:"Зміни · Хаос · Одкровення"},
+  {num:"XVII",name:"Зірка",           sym:"⭐", kw:"Надія · Натхнення · Оновлення"},
+  {num:"XVIII",name:"Місяць",         sym:"🌕", kw:"Ілюзія · Підсвідомість · Невизначеність"},
+  {num:"XIX", name:"Сонце",           sym:"☀️", kw:"Радість · Успіх · Ясність"},
+  {num:"XX",  name:"Суд",             sym:"📯", kw:"Відродження · Усвідомлення · Заклик"},
+  {num:"XXI", name:"Світ",            sym:"🌍", kw:"Завершення · Інтеграція · Тріумф"},
 ];
 
-const RARITY_COLOR = { common:'#aaa', uncommon:'#00ff88', rare:'#4fc3ff', epic:'#b100ff', legendary:'#ffd700' };
+/* Передбачення: {[aura_key]: "текст"} або "_" — дефолт */
+const PREDS = {
+  "Блазень":        {purple:"Гном каже: твоя наступна ідея буде геніальна, і всі скажуть «ну і що?». Це і є успіх.",weird:"Починай щось нове. Але спочатку з'їж щось — ти виглядаєш голодним.",_:"Нова глава відкрита. Старий сценарій викинь — він уже не в тренді."},
+  "Маг":            {gold:"Всі інструменти є. Питання лише в тому, чи ти вже встав від дивана.",_:"У тебе є все необхідне. Гном перевірив. Двічі. І каже: починай."},
+  "Жриця":         {blue:"Та річ, яку ти відчуваєш, але боїшся сказати — правда. Гном підтверджує.",_:"Відповідь вже є всередині. Вона в тій тиші між повідомленнями."},
+  "Цариця":        {green:"Розцвітай. Навіть якщо чат бачить тільки меми — всередині ти цілий сад.",_:"Доглядай те, що зростає. Решта само впаде."},
+  "Цар":           {gold:"Хтось у чаті чекає, що ти нарешті скажеш що робити. Ти знаєш хто.",_:"Порядок — це не тюрма. Іноді це просто нарешті поприбирати на столі."},
+  "Жрець":         {_:"Старе правило, про яке ти забув, зараз дуже актуальне. Пригадай. Гном нагадує."},
+  "Закохані":      {_:"Вибір між двома шляхами є. Гном радить не тягнути — мем з цього вийде поганий."},
+  "Колісниця":     {orange:"Ти вже в русі. Не зупиняйся, навіть якщо вай-фай підвис.",_:"Перемога близько. Головне — не відкривати 47 вкладок по дорозі."},
+  "Сила":          {_:"Не силою, а терпінням. Гном чекав на цей момент три тижні. І не шкодує."},
+  "Відлюдник":     {blue:"Твоє мовчання в чаті — це не лінь, це медитація. Гном схвалює.",_:"Усамітнися. Не від людей, а від сповіщень. Хоча б на дві години."},
+  "Колесо Фортуни":{_:"Щось зміниться. Гном не знає що, але каже — дивись по сторонах."},
+  "Справедливість":{_:"Те, що має повернутися — повернеться. Карма читає твої повідомлення."},
+  "Повішений":     {_:"Зупинись. Те, що виглядає як застій — насправді накопичення сил. Або прокрастинація. Але красива."},
+  "Смерть":        {weird:"Щось старе у тобі відмирає. І добре — воно давно заважало.",_:"Це не кінець. Це радикальне перезавантаження. З резервних копій."},
+  "Поміркованість":{_:"Менше крайнощів, більше чаю. Гном перевірив — середній шлях не такий нудний."},
+  "Диявол":        {red:"Та звичка, яка тримає тебе, — ти знаєш яка. Гном також знає. І мовчить.",_:"Ланцюг, до якого ти прикутий, — не замкнений. Сюрприз."},
+  "Вежа":          {_:"Щось впаде. Але те, що залишиться після — міцніше за все попереднє. Обіцяє гном."},
+  "Зірка":         {_:"Після всього є надія. Навіть після того мему в п'ятницю. Особливо після нього."},
+  "Місяць":        {_:"Не все є таким, яким здається. Особливо той профіль у TG без фото."},
+  "Сонце":         {_:"Нарешті. Радість іде до тебе. Впусти. Не кажи що зайнятий."},
+  "Суд":           {_:"Час підбити підсумки. Гном вже підбив і каже — є над чим поміркувати."},
+  "Світ":          {_:"Цей цикл завершено. Ти можеш пишатись. Навіть тими кількома повідомленнями в чаті."},
+};
 
-// ========== CASES ==========
-const CASES = [
-  { id:'basic',  name:'Basic Case',   price:100, icon:'📦', color:'#4fc3ff', pool:['common','uncommon'] },
-  { id:'pro',    name:'Pro Case',     price:300, icon:'💎', color:'#b100ff', pool:['uncommon','rare','epic'] },
-  { id:'elite',  name:'Elite Case',   price:600, icon:'👑', color:'#ffd700', pool:['rare','epic','legendary'] },
+function getPred(card, auraKey) {
+  const p = PREDS[card.name];
+  if (!p) return "Гном задумався і нічого не сказав. Це теж знак.";
+  return p[auraKey] || p["orange"] || p["weird"] || p["_"] || "Гном мовчить. І це вже відповідь.";
+}
+
+/* ════════════════════════════════════════
+   75 АЧІВОК
+   ════════════════════════════════════════ */
+const ACHS = [
+  /* АКТИВНІСТЬ */
+  {id:"night_owl",       i:"🦉", n:"Нічна Сова",          d:"Надсилав повідомлення 3 ночі поспіль після 00:00"},
+  {id:"early_bird",      i:"🌅", n:"Ранній Птах",          d:"Перший у чаті після 6:00 три дні підряд"},
+  {id:"consistent",      i:"📅", n:"Постійний",            d:"Активний щодня 7 днів поспіль"},
+  {id:"talkative",       i:"💬", n:"Балакун",              d:"1000+ повідомлень загалом"},
+  {id:"ultra_talk",      i:"📣", n:"Невгамовний",          d:"3000+ повідомлень загалом"},
+  {id:"marathon",        i:"🏃", n:"Марафонець",           d:"100 повідомлень за один день"},
+  {id:"sprinter",        i:"⚡", n:"Спринтер",             d:"5 повідомлень за 30 секунд"},
+  {id:"ghost",           i:"👻", n:"Привид",               d:"Активність нижче 5% відносно інших"},
+  {id:"lurker_slayer",   i:"👁️",n:"Слідопит",            d:"Відповів на повідомлення після 3+ тижнів тиші"},
+  {id:"comeback",        i:"🔄", n:"Повернення",           d:"Повернувся після довгої паузи"},
+  {id:"insomniac",       i:"🌑", n:"Безсонний",            d:"Активний після 3:00 ночі 5+ разів"},
+  {id:"hyperactive",     i:"🌪️",n:"Гіперактивний",       d:"30+ повідомлень за одну годину"},
+  {id:"daily_grind",     i:"⚙️", n:"Трудяга",             d:"Активний 30 днів підряд"},
+  {id:"time_traveler",   i:"⏰", n:"Мандрівник у часі",   d:"Надіслав повідомлення рівно о 00:00"},
+  /* СТІКЕРИ */
+  {id:"first_sticker",   i:"🎯", n:"Першовідкривач",      d:"Перший хто кинув стікер у чат"},
+  {id:"sticker_lord",    i:"🎭", n:"Пан Стікерів",         d:"Відкрив 10+ стікерів у сховищі"},
+  {id:"sticker_legend",  i:"🏅", n:"Легенда Стікерів",    d:"В топ-3 першовідкривачів стікерів"},
+  {id:"sticker_god",     i:"👑", n:"Бог Стікерів",         d:"Усі 3 топ-стікери відкрив саме ти"},
+  {id:"collector",       i:"📦", n:"Колекціонер",           d:"Відкрив 20+ різних стікерів"},
+  {id:"cry_baby",        i:"😭", n:"Плакса",               d:"Стікер 😭 використовували 50+ разів"},
+  {id:"meme_lord",       i:"🗿", n:"Пан Меме",             d:"Стікер 🗿 використовували 30+ разів"},
+  /* СЛОВА */
+  {id:"philosopher",     i:"🤔", n:"Філософ",              d:"Часто вживає: сенс, життя, чому"},
+  {id:"poet",            i:"✍️", n:"Поет",                 d:"10+ повідомлень довших за 200 символів"},
+  {id:"word_smith",      i:"📝", n:"Словесник",            d:"Різноманітність словника у топ-15% чату"},
+  {id:"deep_thinker",    i:"🧠", n:"Глибокодум",           d:"Середня довжина повідомлення — 80+ символів"},
+  {id:"one_liner",       i:"🗡️",n:"Влучне Слово",        d:"50+ одно-дво-словних повідомлень"},
+  {id:"emoji_addict",    i:"😂", n:"Емодзі-маніяк",        d:"Емодзі в 60%+ повідомлень"},
+  {id:"caps_lord",       i:"📢", n:"ВЕЛИКІ ЛІТЕРИ",         d:"20+ повідомлень написано ВЕЛИКИМИ"},
+  {id:"question_master", i:"❓", n:"Знавець Питань",       d:"100+ повідомлень із знаком питання"},
+  {id:"exclaimer",       i:"❗", n:"Вигукувач",            d:"50+ повідомлень із !!!"},
+  {id:"punster",         i:"😄", n:"Жартівник",            d:"Реакція 😂 на твої слова 30+ разів"},
+  {id:"storyteller",     i:"📖", n:"Оповідач",             d:"Повідомлення 500+ символів — двічі"},
+  {id:"linguist",        i:"🌍", n:"Поліглот",             d:"Повідомлення трьома+ мовами"},
+  /* СОЦІАЛЬНА ДИНАМІКА */
+  {id:"peacemaker",      i:"🕊️",n:"Миротворець",         d:"Відповів спокійно на конфліктне повідомлення"},
+  {id:"hype_man",        i:"🙌", n:"Гіпман",               d:"100+ реакцій 🔥 або 👏 на чужі пости"},
+  {id:"ghost_whisp",     i:"🌫️",n:"Відповідає мертвим",  d:"Відповів на повідомлення старше 24год — 5+ разів"},
+  {id:"social_butterfly",i:"🦋", n:"Метелик",              d:"Відповів кожному учаснику чату хоч раз"},
+  {id:"controversy",     i:"🌪️",n:"Скандаліст",          d:"Твоє повідомлення зібрало 20+ відповідей"},
+  {id:"og_member",       i:"🏆", n:"ОГ",                   d:"Один з перших 10 учасників чату"},
+  {id:"silent_sage",     i:"🧘", n:"Мовчазний Мудрець",   d:"Мовчав 48год, потім написав довге повідомлення"},
+  {id:"reactor",         i:"⚡", n:"Реактор",              d:"Першим відреагував на 30+ повідомлень"},
+  {id:"healer",          i:"💊", n:"Цілитель",             d:"Підтримав когось у скрутну хвилину 10+ разів"},
+  {id:"roast_master",    i:"🔥", n:"Майстер Роасту",       d:"Твій жарт про когось набрав 10+ реакцій"},
+  {id:"lurker_out",      i:"🐣", n:"Вийшов з тіні",        d:"Перше повідомлення після 7+ днів тиші"},
+  /* ТАРО */
+  {id:"the_chosen",      i:"✨", n:"Обраний",              d:"Вперше розклав карти Таро"},
+  {id:"fate_seeker",     i:"🔮", n:"Шукач Долі",           d:"Розкладав Таро 7 днів поспіль"},
+  {id:"tower_survivor",  i:"🗼", n:"Вижив у Вежі",         d:"Витягнув карту «Вежа»"},
+  {id:"star_child",      i:"⭐", n:"Дитя Зірок",           d:"Витягнув карту «Зірка»"},
+  {id:"fool_journey",    i:"🤹", n:"Мандрівка Блазня",     d:"Витягнув усі 22 аркани"},
+  {id:"midnight_oracle", i:"🌑", n:"Опівнічний Оракул",    d:"Розклав Таро рівно опівночі"},
+  {id:"death_walker",    i:"💀", n:"Танцівник Смерті",     d:"Витягнув карту «Смерть»"},
+  {id:"sun_blessed",     i:"☀️", n:"Осяяний Сонцем",      d:"Витягнув карту «Сонце»"},
+  /* EASTER EGGS */
+  {id:"emote_king",      i:"🎪", n:"Цар Емоцій",           d:"Використав всі категорії емодзі за день"},
+  {id:"detective",       i:"🕵️",n:"Детектив",            d:"Переглянув усі 100 слотів стікерів"},
+  {id:"archivist",       i:"📚", n:"Архіваріус",           d:"Відвідав усі 3 вкладки за одну сесію"},
+  {id:"alchemy",         i:"⚗️", n:"Алхімік",              d:"Переключив усі 4 теми оформлення"},
+  {id:"mirror_self",     i:"🪞", n:"Дзеркало",             d:"Перегорнув картку профілю 10+ разів"},
+  {id:"triple_crown",    i:"🎖️",n:"Потрійна Корона",     d:"Топ-3 за повідомленнями, стікерами і реакціями"},
+  {id:"legend_ach",      i:"🌟", n:"Легенда",              d:"Розблокував 40+ досягнень"},
+  {id:"copypasta",       i:"📋", n:"Капіпаста",            d:"Надіслав те саме повідомлення 3+ рази"},
+  {id:"voice_reason",    i:"🧩", n:"Голос Розуму",         d:"Твоє пояснення завершило суперечку"},
+  {id:"gif_master",      i:"🎬", n:"Майстер GIF",          d:"Надіслав 20+ GIF-ок"},
+  {id:"poll_king",       i:"📊", n:"Цар Опитувань",        d:"Створив 5+ опитувань у чаті"},
+  {id:"link_sharer",     i:"🔗", n:"Розповсюджувач",       d:"Поділився 30+ посиланнями"},
+  {id:"speed_reader",    i:"👀", n:"Швидкий Погляд",       d:"Прочитав повідомлення за 2 сек після надсилання"},
+  {id:"perfectionist",   i:"💎", n:"Перфекціоніст",        d:"Відредагував повідомлення протягом 10 секунд"},
+  {id:"lurker_slayer",   i:"🔍", n:"Мисливець",            d:"Відповів на повідомлення що вже 24г без відповіді"},
+  {id:"early_reactor",   i:"⚡", n:"Перша Реакція",         d:"Першим поставив реакцію на 20+ повідомлень"},
+  {id:"top_3_opener",    i:"🏅", n:"Топ Відкривач",         d:"В рейтингу топ-3 першовідкривачів стікерів"},
+  {id:"vibe_check",      i:"✅", n:"Вайб-чек пройдено",    d:"Твій вайб оцінений як «легенда» іншими"},
 ];
 
-// ========== UTILS ==========
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  if(id==='menu') { updateMenuUI(); drawMenuBlade(); }
-  if(id==='shop') renderShop();
-  if(id==='cases') renderCases();
+/* ════════════════════════════════════════
+   STATE
+   ════════════════════════════════════════ */
+let flipCount = 0;
+let tabsVisited = new Set(["profile"]);
+let themesVisited = new Set(["t1"]);
+let drawnCards = JSON.parse(localStorage.getItem("benini_drawn")||"[]");
+let cdInterval = null;
+const TG = window.Telegram?.WebApp||null;
+function haptic(t="light"){try{TG?.HapticFeedback?.impactOccurred(t);}catch(e){}}
+function hapticN(t="success"){try{TG?.HapticFeedback?.notificationOccurred(t);}catch(e){}}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  if(TG){TG.ready();TG.expand();}
+  initProfile();
+  initStickers();
+  initTarot();
+});
+
+/* ════════════════════════════════════════
+   THEME
+   ════════════════════════════════════════ */
+function setTheme(t,el){
+  haptic("light");
+  document.body.setAttribute("data-theme",t);
+  document.querySelectorAll(".theme-dot").forEach(d=>d.classList.remove("active"));
+  el.classList.add("active");
+  themesVisited.add(t);
+  if(themesVisited.size>=4) unlockAch("alchemy");
 }
 
-function updateMenuUI() {
-  document.getElementById('menuCoinCount').textContent = state.coins;
-  document.getElementById('shopCoinCount').textContent = state.coins;
-  document.getElementById('casesCoinCount').textContent = state.coins;
+/* ════════════════════════════════════════
+   TAB SWITCH
+   ════════════════════════════════════════ */
+function switchTab(tab){
+  haptic("light");
+  tabsVisited.add(tab);
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  document.querySelector(`.nav-btn[data-tab="${tab}"]`).classList.add("active");
+  if(tabsVisited.size>=3) unlockAch("archivist");
 }
 
-function spawnFloatText(x, y, text, color='#ffd700') {
-  const el = document.createElement('div');
-  el.className = 'float-coin';
-  el.style.left = x+'px'; el.style.top = y+'px'; el.style.color = color;
-  el.textContent = text;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 1200);
-}
-
-// ========== BLADE DRAWING ==========
-function getBladeData(id) { return BLADES.find(b=>b.id===id)||BLADES[0]; }
-
-function drawBlade(ctx, blade, cx, cy, size, time=0) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(Math.sin(time*0.003)*0.15);
-  const c = blade.color, g = blade.glow;
-
-  // Glow aura
-  const aura = ctx.createRadialGradient(0,0,0,0,0,size*.7);
-  aura.addColorStop(0, g+'33'); aura.addColorStop(1, 'transparent');
-  ctx.fillStyle = aura; ctx.beginPath(); ctx.arc(0,0,size*.7,0,Math.PI*2); ctx.fill();
-
-  // Handle
-  const hGrad = ctx.createLinearGradient(-size*.08,-size*.4,-size*.08,size*.45);
-  hGrad.addColorStop(0,'#333'); hGrad.addColorStop(.5,'#666'); hGrad.addColorStop(1,'#222');
-  ctx.fillStyle = hGrad;
-  roundRect(ctx, -size*.08, size*.1, size*.16, size*.35, size*.04);
-  ctx.fill();
-
-  // Guard
-  ctx.fillStyle = c+'99';
-  roundRect(ctx, -size*.2, size*.05, size*.4, size*.08, size*.03);
-  ctx.fill();
-
-  // Blade body
-  ctx.beginPath();
-  ctx.moveTo(0, -size*.5);
-  ctx.bezierCurveTo(size*.22, -size*.2, size*.18, size*.05, size*.04, size*.1);
-  ctx.lineTo(-size*.04, size*.1);
-  ctx.bezierCurveTo(-size*.18, size*.05, -size*.22, -size*.2, 0, -size*.5);
-  ctx.closePath();
-
-  const bGrad = ctx.createLinearGradient(-size*.2,0,size*.2,0);
-  bGrad.addColorStop(0,c+'aa'); bGrad.addColorStop(.4,'#fff'); bGrad.addColorStop(.6,'#fff'); bGrad.addColorStop(1,c+'aa');
-  ctx.fillStyle = bGrad;
-  ctx.fill();
-
-  // Neon edge
-  ctx.strokeStyle = g; ctx.lineWidth = size*.025;
-  ctx.shadowColor = g; ctx.shadowBlur = 12;
-  ctx.stroke();
-
-  // Rarity gems
-  if(blade.rarity==='legendary') {
-    for(let i=0;i<3;i++) {
-      const gy = -size*.3 + i*size*.12;
-      ctx.beginPath(); ctx.arc(0,gy,size*.035,0,Math.PI*2);
-      const gemGrad = ctx.createRadialGradient(0,gy,0,0,gy,size*.035);
-      gemGrad.addColorStop(0,'#fff'); gemGrad.addColorStop(1,c);
-      ctx.fillStyle = gemGrad; ctx.shadowBlur=8; ctx.shadowColor=c; ctx.fill();
-    }
-  } else if(blade.rarity==='epic') {
-    ctx.beginPath(); ctx.arc(0,-size*.25,size*.04,0,Math.PI*2);
-    ctx.fillStyle='#fff'; ctx.shadowBlur=10; ctx.shadowColor=c; ctx.fill();
-  }
-
-  ctx.restore();
-}
-
-function roundRect(ctx,x,y,w,h,r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
-  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
-  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
-  ctx.closePath();
-}
-
-// Menu blade animation
-let menuBladeTime = 0;
-function drawMenuBlade() {
-  const c = document.getElementById('menuBladeCanvas');
-  if(!c) return;
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,120,120);
-  drawBlade(ctx, getBladeData(state.equippedBlade), 60, 60, 50, menuBladeTime);
-  menuBladeTime += 16;
-  if(!document.getElementById('menu').classList.contains('hidden'))
-    requestAnimationFrame(drawMenuBlade);
-}
-
-// ========== SHOP ==========
-function renderShop() {
-  document.getElementById('shopCoinCount').textContent = state.coins;
-  const grid = document.getElementById('bladeGrid');
-  grid.innerHTML = '';
-  BLADES.forEach(blade => {
-    const owned = state.ownedBlades.includes(blade.id);
-    const equipped = state.equippedBlade === blade.id;
-    const card = document.createElement('div');
-    card.className = 'blade-card' + (equipped?' equipped':'') + (owned?'':' locked');
-    card.innerHTML = `
-      <canvas class="blade-card-canvas" id="bc_${blade.id}" width="120" height="120"></canvas>
-      <div class="blade-name">${blade.icon} ${blade.name}</div>
-      <div class="blade-rarity rarity-${blade.rarity}">${blade.rarity.toUpperCase()}</div>
-      <div class="blade-price">${owned ? (equipped?'✓ EQUIPPED':'TAP TO EQUIP') : '🪙 '+blade.price}</div>
-      ${equipped?'<div class="blade-badge">ON</div>':''}
-    `;
-    card.onclick = () => handleBladeClick(blade);
-    grid.appendChild(card);
-    setTimeout(()=>{
-      const bc = document.getElementById('bc_'+blade.id);
-      if(bc) { const bctx=bc.getContext('2d'); drawBlade(bctx,blade,60,60,42); }
-    },0);
-  });
-}
-
-function handleBladeClick(blade) {
-  if(state.equippedBlade===blade.id) return;
-  if(state.ownedBlades.includes(blade.id)) {
-    state.equippedBlade = blade.id; saveState(); renderShop(); return;
-  }
-  if(state.coins >= blade.price) {
-    state.coins -= blade.price;
-    state.ownedBlades.push(blade.id);
-    state.equippedBlade = blade.id;
-    saveState(); renderShop();
-    document.getElementById('shopCoinCount').textContent = state.coins;
-    spawnFloatText(window.innerWidth/2-60, window.innerHeight/2, '⚔️ UNLOCKED!', blade.color);
-  } else {
-    spawnFloatText(window.innerWidth/2-60, window.innerHeight/2, '❌ NOT ENOUGH COINS', '#ff3366');
-  }
-}
-
-// ========== CASES ==========
-function renderCases() {
-  document.getElementById('casesCoinCount').textContent = state.coins;
-  const grid = document.getElementById('caseGrid');
-  grid.innerHTML = '';
-  CASES.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'case-card';
-    card.style.borderColor = c.color+'44';
-    card.style.boxShadow = `0 0 20px ${c.color}22`;
-    card.innerHTML = `
-      <div class="case-icon" style="color:${c.color}">${c.icon}</div>
-      <div class="case-info">
-        <h3>${c.name}</h3>
-        <p>Рідкість: ${c.pool.join(', ')}</p>
-      </div>
-      <div class="case-price"><span>🪙 ${c.price}</span></div>
-    `;
-    card.onclick = ()=>openCase(c);
-    grid.appendChild(card);
-  });
-}
-
-function openCase(caseData) {
-  if(state.coins < caseData.price) {
-    spawnFloatText(window.innerWidth/2-80, window.innerHeight/2, '❌ НЕ ВИСТАЧАЄ МОНЕТ', '#ff3366');
-    return;
-  }
-  state.coins -= caseData.price;
-  // pick rarity then blade
-  const rarities = caseData.pool;
-  const weights = rarities.map(r => ({common:50,uncommon:30,rare:15,epic:8,legendary:3}[r]||10));
-  const total = weights.reduce((a,b)=>a+b,0);
-  let roll = Math.random()*total;
-  let pickedRarity = rarities[0];
-  for(let i=0;i<rarities.length;i++) { roll-=weights[i]; if(roll<=0){pickedRarity=rarities[i];break;} }
-
-  const pool = BLADES.filter(b=>b.rarity===pickedRarity);
-  const blade = pool[Math.floor(Math.random()*pool.length)];
-
-  if(!state.ownedBlades.includes(blade.id)) state.ownedBlades.push(blade.id);
-  saveState();
-  showCaseReveal(blade);
-  document.getElementById('casesCoinCount').textContent = state.coins;
-}
-
-function showCaseReveal(blade) {
-  document.getElementById('caseOpen').classList.remove('hidden');
-  document.getElementById('revealName').textContent = blade.icon+' '+blade.name;
-  document.getElementById('revealName').style.color = blade.color;
-  document.getElementById('revealRarity').textContent = blade.rarity.toUpperCase();
-  document.getElementById('revealRarity').style.color = RARITY_COLOR[blade.rarity];
-
-  const rc = document.getElementById('revealCanvas');
-  const rctx = rc.getContext('2d');
-  let t=0;
-  function animReveal() {
-    rctx.clearRect(0,0,240,240);
-    drawBlade(rctx, blade, 120, 120, 100, t);
-    t+=16;
-    if(!document.getElementById('caseOpen').classList.contains('hidden'))
-      requestAnimationFrame(animReveal);
-  }
-  animReveal();
-}
-
-function closeCaseReveal() {
-  document.getElementById('caseOpen').classList.add('hidden');
-}
-
-// ==================== GAME ENGINE ====================
-let gCanvas, gCtx, animId;
-let fruits=[], particles=[], trails=[], slashLine=[];
-let score=0, lives=6, sessionCoins=0, slicedCount=0, maxCombo=0;
-let comboCount=0, comboTimer=null;
-let isPointerDown=false, lastPointer={x:0,y:0};
-let gamePaused=false, gameRunning=false;
-let spawnTimer=0, difficulty=1;
-let bgParticles=[];
-
-const FRUIT_TYPES = [
-  {name:'watermelon', color:'#ff4444', inner:'#ff8888', icon:'🍉', score:1, radius:32, coins:1},
-  {name:'orange',     color:'#ff8800', inner:'#ffaa44', icon:'🍊', score:1, radius:26, coins:1},
-  {name:'apple',      color:'#ff2255', inner:'#ff6688', icon:'🍎', score:2, radius:26, coins:1},
-  {name:'pineapple',  color:'#ffcc00', inner:'#ffee44', icon:'🍍', score:2, radius:30, coins:2},
-  {name:'mango',      color:'#ff9900', inner:'#ffcc44', icon:'🥭', score:3, radius:28, coins:2},
-  {name:'lemon',      color:'#ffee00', inner:'#ffff88', icon:'🍋', score:1, radius:22, coins:1},
-  {name:'grape',      color:'#aa44ff', inner:'#cc88ff', icon:'🍇', score:2, radius:24, coins:2},
-  {name:'bomb',       color:'#222',    inner:'#555',    icon:'💣', score:-10,radius:28, coins:0, isBomb:true},
-  {name:'star',       color:'#ffd700', inner:'#fff',    icon:'⭐', score:5, radius:28, coins:5, isBonus:true},
-];
-
-function initGame() {
-  gCanvas = document.getElementById('gameCanvas');
-  gCtx = gCanvas.getContext('2d', {alpha:false});
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-  setupBgParticles();
-}
-
-function resizeCanvas() {
-  if(!gCanvas) return;
-  gCanvas.width = window.innerWidth;
-  gCanvas.height = window.innerHeight;
-}
-
-function setupBgParticles() {
-  bgParticles = [];
-  for(let i=0;i<40;i++) {
-    bgParticles.push({
-      x: Math.random()*window.innerWidth,
-      y: Math.random()*window.innerHeight,
-      r: Math.random()*1.5+.5,
-      speed: Math.random()*.3+.1,
-      opacity: Math.random()*.4+.1,
-    });
-  }
-}
-
-function startGame() {
-  showScreen('game');
-  if(!gCanvas) initGame();
-  resizeCanvas();
-  fruits=[]; particles=[]; trails=[]; slashLine=[];
-  score=0; lives=6; sessionCoins=0; slicedCount=0; maxCombo=0;
-  comboCount=0; spawnTimer=0; difficulty=1; gamePaused=false; gameRunning=true;
-  updateHUD();
-  setupTouchEvents();
-  if(animId) cancelAnimationFrame(animId);
-  gameLoop();
-}
-
-function updateHUD() {
-  document.getElementById('scoreDisplay').textContent = score;
-  document.getElementById('sessionCoins').textContent = sessionCoins;
-  const lv = document.getElementById('livesDisplay');
-  lv.innerHTML = '';
-  // 6 напів-сердець = 3 повних. Показуємо 3 серця з станом: full / half / empty
-  for(let i=0;i<3;i++) {
-    const halfsFilled = Math.max(0, lives - i*2); // скільки половинок лишилось для цього серця
-    const h = document.createElement('div');
-    h.className = 'heart';
-    h.style.transition = 'all .3s';
-    if(halfsFilled >= 2)      h.textContent = '❤️';
-    else if(halfsFilled === 1) h.textContent = '💔';
-    else                       { h.textContent = '🖤'; h.style.opacity='.25'; h.style.transform='scale(.7)'; }
-    lv.appendChild(h);
-  }
-}
-
-let pointer = {x:0,y:0};
-let lastSlicePos = null;
-
-function setupTouchEvents() {
-  gCanvas.removeEventListener('touchstart', onTS);
-  gCanvas.removeEventListener('touchmove', onTM);
-  gCanvas.removeEventListener('touchend', onTE);
-  gCanvas.removeEventListener('mousedown', onMD);
-  gCanvas.removeEventListener('mousemove', onMM);
-  gCanvas.removeEventListener('mouseup', onMU);
-
-  gCanvas.addEventListener('touchstart', onTS, {passive:false});
-  gCanvas.addEventListener('touchmove', onTM, {passive:false});
-  gCanvas.addEventListener('touchend', onTE, {passive:false});
-  gCanvas.addEventListener('mousedown', onMD);
-  gCanvas.addEventListener('mousemove', onMM);
-  gCanvas.addEventListener('mouseup', onMU);
-}
-
-function getXY(e) {
-  if(e.touches) { return {x:e.touches[0].clientX, y:e.touches[0].clientY}; }
-  return {x:e.clientX, y:e.clientY};
-}
-
-function onTS(e) { e.preventDefault(); isPointerDown=true; const p=getXY(e); pointer=p; lastSlicePos=p; slashLine=[p]; }
-function onTM(e) { e.preventDefault(); if(!isPointerDown) return; sliceMove(e); }
-function onTE(e) { isPointerDown=false; slashLine=[]; lastSlicePos=null; }
-function onMD(e) { isPointerDown=true; const p=getXY(e); pointer=p; lastSlicePos=p; slashLine=[p]; }
-function onMM(e) { if(!isPointerDown) return; sliceMove(e); }
-function onMU(e) { isPointerDown=false; slashLine=[]; lastSlicePos=null; }
-
-function sliceMove(e) {
-  const p = getXY(e);
-  pointer = p;
-  if(lastSlicePos) {
-    const blade = getBladeData(state.equippedBlade);
-    trails.push({
-      x1:lastSlicePos.x, y1:lastSlicePos.y,
-      x2:p.x, y2:p.y,
-      alpha:1, width:4, color:blade.color, glow:blade.glow,
-      effect:blade.effect, trail:blade.trail
-    });
-    checkSlice(lastSlicePos, p);
-  }
-  slashLine.push(p);
-  if(slashLine.length>20) slashLine.shift();
-  lastSlicePos = p;
-}
-
-function checkSlice(a, b) {
-  if(!gameRunning || gamePaused) return;
-  for(let i=fruits.length-1;i>=0;i--) {
-    const f = fruits[i];
-    if(f.sliced) continue;
-    if(lineCircleIntersect(a.x,a.y,b.x,b.y,f.x,f.y,f.radius)) {
-      sliceFruit(f, i, b.x, b.y);
-    }
-  }
-}
-
-function lineCircleIntersect(x1,y1,x2,y2,cx,cy,r) {
-  const dx=x2-x1, dy=y2-y1;
-  const fx=x1-cx, fy=y1-cy;
-  const a=dx*dx+dy*dy;
-  const b=2*(fx*dx+fy*dy);
-  const c=fx*fx+fy*fy-r*r;
-  let disc=b*b-4*a*c;
-  if(disc<0) return false;
-  disc=Math.sqrt(disc);
-  const t1=(-b-disc)/(2*a), t2=(-b+disc)/(2*a);
-  return (t1>=0&&t1<=1)||(t2>=0&&t2<=1);
-}
-
-function sliceFruit(f, idx, sx, sy) {
-  f.sliced = true;
-  fruits.splice(idx,1);
-
-  if(f.isBomb) {
-    // Бомба знімає пів серця (але мін 1 якщо лишилось 1)
-    lives = lives > 1 ? lives - 1 : 0;
-    spawnParticles(f.x,f.y,'#ff4400',25,'boom');
-    // Показати попередження
-    const warn = document.createElement('div');
-    warn.className = 'combo-flash';
-    warn.style.color='#ff4400'; warn.style.textShadow='0 0 20px #ff4400';
-    warn.textContent='💣 -½ HP!';
-    document.body.appendChild(warn);
-    setTimeout(()=>warn.remove(), 750);
-    updateHUD();
-    comboCount=0;
-    if(lives<=0) { setTimeout(endGame,400); }
-    return;
-  }
-
-  score += f.score * Math.max(1, comboCount);
-  slicedCount++;
-  comboCount++;
-  if(comboCount>maxCombo) maxCombo=comboCount;
-  if(comboTimer) clearTimeout(comboTimer);
-  comboTimer = setTimeout(()=>comboCount=0, 1200);
-
-  const blade = getBladeData(state.equippedBlade);
-  const coinEarn = f.coins || 1;
-  sessionCoins += coinEarn;
-  updateHUD();
-
-  spawnParticles(f.x, f.y, f.color, 15, blade.effect);
-  spawnHalves(f);
-
-  // Score popup
-  const pop = document.createElement('div');
-  pop.className = 'score-pop';
-  pop.style.left = (f.x-20)+'px'; pop.style.top = (f.y-20)+'px';
-  pop.style.color = comboCount>=3 ? blade.color : '#fff';
-  pop.textContent = (comboCount>=3?'x'+comboCount+' ':'')+'+'+(f.score*(comboCount>=3?comboCount:1));
-  document.body.appendChild(pop);
-  setTimeout(()=>pop.remove(), 900);
-
-  if(comboCount>=3) showCombo(comboCount, blade.color);
-  if(f.isBonus) spawnFloatText(f.x, f.y-40, '⭐ BONUS!', '#ffd700');
-}
-
-function showCombo(count, color) {
-  const el = document.createElement('div');
-  el.className = 'combo-flash';
-  el.style.color = color; el.style.textShadow=`0 0 20px ${color}`;
-  el.textContent = count+'x COMBO!';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 750);
-}
-
-function spawnHalves(f) {
-  const ang = Math.random()*Math.PI;
-  for(let i=0;i<2;i++) {
-    const side = i===0?1:-1;
-    particles.push({
-      type:'half', x:f.x, y:f.y,
-      vx:Math.cos(ang)*side*3+Math.random()*2-1,
-      vy:-(Math.random()*4+3),
-      vy2:0, gravity:0.3,
-      color:f.color, inner:f.inner, r:f.radius*.7,
-      alpha:1, rot:Math.random()*Math.PI, rotSpeed:(Math.random()-.5)*.15,
-      life:60
-    });
-  }
-}
-
-function spawnParticles(x,y,color,count,effect) {
-  for(let i=0;i<count;i++) {
-    const ang = (Math.PI*2*i)/count + Math.random()*.5;
-    const spd = Math.random()*5+2;
-    particles.push({
-      type:'spark', x, y,
-      vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
-      gravity:0.15, color,
-      alpha:1, r:Math.random()*3+1,
-      life:40+Math.random()*20,
-      effect
-    });
-  }
-  // juice splat
-  for(let i=0;i<8;i++) {
-    particles.push({
-      type:'splat', x, y,
-      vx:(Math.random()-0.5)*8, vy:(Math.random()-2)*5,
-      gravity:.25, color,
-      alpha:.8, r:Math.random()*4+2,
-      life:30
-    });
-  }
-}
-
-function spawnOneFruit() {
-  const W = gCanvas.width, H = gCanvas.height;
-  const types = FRUIT_TYPES.filter(t => !t.isBomb && !t.isBonus);
-  const bombChance = Math.min(.07 + difficulty * .008, .15);
-  let ft;
-  if (Math.random() < bombChance) {
-    ft = FRUIT_TYPES.find(t => t.isBomb);
-  } else if (Math.random() < .06) {
-    ft = FRUIT_TYPES.find(t => t.isBonus);
-  } else {
-    ft = types[Math.floor(Math.random() * types.length)];
-  }
-
-  const gravity = 0.04;
-  // Апекс: фрукт долетить до 20-45% висоти екрану
-  const targetApex = H * (0.20 + Math.random() * 0.25);
-  const dist = H - targetApex;
-  const speed = Math.sqrt(2 * gravity * dist);
-
-  // Обмежуємо vx щоб фрукт не вилетів за бік
-  const halfFlight = speed / gravity;
-  const maxVx = Math.min((W * 0.35 - ft.radius) / halfFlight, 1.0);
-  const vx = (Math.random() - 0.5) * 2 * maxVx;
-
-  // X з урахуванням дрейфу
-  const drift = vx * halfFlight;
-  const minX = ft.radius + Math.max(0, -drift);
-  const maxX = W - ft.radius - Math.max(0, drift);
-  const x = minX + Math.random() * Math.max(10, maxX - minX);
-
-  fruits.push({
-    ...ft,
-    x, y: H + ft.radius,
-    vx, vy: -speed,
-    gravity,
-    rot: Math.random() * Math.PI * 2,
-    rotSpeed: (Math.random() - 0.5) * 0.05,
-    sliced: false, offscreen: false,
-    t: 0, glowPhase: Math.random() * Math.PI * 2
-  });
-}
-
-function spawnFruit() {
-  // Іноді хвиля з 2-3 фруктів з невеликою затримкою
-  const count = Math.random() < 0.35 ? (Math.random() < 0.4 ? 3 : 2) : 1;
-  spawnOneFruit();
-  for (let i = 1; i < count; i++) {
-    setTimeout(spawnOneFruit, i * 260);
-  }
-}
-
-function endGame() {
-  gameRunning=false;
-  cancelAnimationFrame(animId);
-  state.coins += sessionCoins;
-  if(score>state.highScore) state.highScore=score;
-  saveState();
-  document.getElementById('finalScore').textContent=score;
-  document.getElementById('finalFruits').textContent=slicedCount;
-  document.getElementById('finalCombo').textContent=maxCombo;
-  document.getElementById('earnedCoins').textContent=sessionCoins;
-  showScreen('gameover');
-}
-
-function togglePause() {
-  gamePaused=!gamePaused;
-  document.querySelector('.pause-btn').textContent=gamePaused?'▶':'⏸';
-  if(!gamePaused) gameLoop();
-}
-
-let lastTime=0;
-function gameLoop(ts=0) {
-  if(!gameRunning||gamePaused) return;
-  animId=requestAnimationFrame(gameLoop);
-  const dt=Math.min(ts-lastTime, 50); lastTime=ts;
-
-  updateGame(dt);
-  renderGame();
-}
-
-function updateGame(dt) {
-  spawnTimer+=dt;
-  const interval = Math.max(1400 - difficulty * 60, 600);
-  if(spawnTimer>interval) { spawnFruit(); spawnTimer=0; }
-  difficulty = 1 + score/80;
-
-  // Update fruits
-  for(let i=fruits.length-1;i>=0;i--) {
-    const f=fruits[i];
-    f.vy+=f.gravity; f.x+=f.vx; f.y+=f.vy;
-    f.rot+=f.rotSpeed; f.t++;
-    if(f.y > gCanvas.height+80) {
-      if(!f.isBomb && !f.sliced) { lives -= 2; updateHUD(); if(lives<=0)endGame(); }
-      fruits.splice(i,1);
-    }
-  }
-
-  // Update particles
-  for(let i=particles.length-1;i>=0;i--) {
-    const p=particles[i];
-    p.vy+=p.gravity; p.x+=p.vx; p.y+=p.vy;
-    p.alpha-=1/p.life; p.life--;
-    if(p.type==='half'){p.rot+=p.rotSpeed;}
-    if(p.life<=0||p.alpha<=0) particles.splice(i,1);
-  }
-
-  // Update trails
-  for(let i=trails.length-1;i>=0;i--) {
-    trails[i].alpha-=.06;
-    if(trails[i].alpha<=0) trails.splice(i,1);
-  }
-
-  // Bg particles
-  bgParticles.forEach(p=>{ p.y-=p.speed; if(p.y<0){p.y=gCanvas.height;p.x=Math.random()*gCanvas.width;} });
-}
-
-function renderGame() {
-  const ctx=gCtx, W=gCanvas.width, H=gCanvas.height;
-
-  // Background
-  ctx.fillStyle='#050510';
-  ctx.fillRect(0,0,W,H);
-
-  // Grid
-  ctx.strokeStyle='rgba(0,245,255,.04)';
-  ctx.lineWidth=1;
-  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-
-  // BG particles
-  bgParticles.forEach(p=>{
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(0,245,255,${p.opacity})`; ctx.fill();
+/* ════════════════════════════════════════
+   PROFILE
+   ════════════════════════════════════════ */
+function initProfile(){
+  const u = MOCK.user;
+  const auraKey = calcAura(u);
+  const aura = AURA[auraKey];
+
+  /* Apply aura to elements */
+  const outer = document.getElementById("auraOuter");
+  const spin  = document.getElementById("auraSpin");
+  const lbl   = document.getElementById("auraLbl");
+  const cbg   = document.getElementById("cbg");
+  outer.style.cssText=`border:2px solid ${aura.c};--ac:${aura.c};--ar:${aura.r};animation:auraPulse 2.5s ease-in-out infinite;border-radius:50%;position:absolute;inset:0;`;
+  spin.style.cssText=`background:conic-gradient(${aura.c} 0deg,transparent 120deg,${aura.c} 240deg,transparent 360deg);position:absolute;inset:-4px;border-radius:50%;animation:auraspin 4s linear infinite;opacity:.35;`;
+  lbl.style.color=aura.c;
+  lbl.textContent=aura.lbl;
+  cbg.style.background=`radial-gradient(circle at 50% 30%,rgba(${aura.r},.14) 0%,transparent 65%)`;
+
+  const pulseDur=Math.max(0.9,3.2-(u.activity_percentile/100)*2.3);
+  outer.style.animationDuration=pulseDur+"s";
+
+  const photo=document.getElementById("auraPhoto");
+  if(u.photo_url) photo.innerHTML=`<img src="${u.photo_url}" alt="">`;
+  else photo.textContent=u.photo_emoji;
+
+  document.getElementById("userName").textContent=u.username;
+  document.getElementById("userRole").textContent=u.role;
+  document.getElementById("userVibe").textContent=u.vibe;
+  document.getElementById("userBio").textContent=`"${u.bio}"`;
+
+  /* Back */
+  document.getElementById("bMsgs").textContent=u.monthly_messages.toLocaleString("uk");
+  const bw=document.getElementById("bWords");
+  u.top_words.forEach(w=>{const c=document.createElement("div");c.className="chip";c.textContent=w;bw.appendChild(c);});
+
+  const bs=document.getElementById("bStickers");
+  const sorted=[...MOCK.stickers].sort((a,b)=>b.count-a.count);
+  sorted.slice(0,3).forEach((s,i)=>{
+    const d=document.createElement("div");d.className="stk-prev";
+    d.innerHTML=`<span style="font-size:1.7rem">${s.emoji}</span><div class="stk-prev-rank">${["🥇","🥈","🥉"][i]}</div>`;
+    bs.appendChild(d);
   });
 
-  // Trails
-  trails.forEach(t=>{
-    ctx.save();
-    ctx.globalAlpha=t.alpha;
-    ctx.strokeStyle=t.color; ctx.lineWidth=t.width*t.alpha;
-    ctx.shadowColor=t.glow; ctx.shadowBlur=18;
-    ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(t.x1,t.y1); ctx.lineTo(t.x2,t.y2); ctx.stroke();
-    // Secondary glow
-    ctx.strokeStyle='#fff'; ctx.lineWidth=t.width*t.alpha*.4; ctx.shadowBlur=8;
-    ctx.beginPath(); ctx.moveTo(t.x1,t.y1); ctx.lineTo(t.x2,t.y2); ctx.stroke();
-    ctx.restore();
-  });
+  document.getElementById("bAct").textContent=u.activity_percentile+"% активності";
+  document.getElementById("bRank").textContent="#"+u.ach_rank;
+  setTimeout(()=>{
+    document.getElementById("actBar").style.width=u.activity_percentile+"%";
+    const ap=Math.round(u.unlocked.length/ACHS.length*100);
+    document.getElementById("bAchPct").textContent=ap+"%";
+    document.getElementById("achBar").style.width=ap+"%";
+  },350);
 
-  // Slash line
-  if(isPointerDown && slashLine.length>1) {
-    const blade=getBladeData(state.equippedBlade);
-    ctx.save();
-    for(let i=1;i<slashLine.length;i++) {
-      const a=(i/slashLine.length);
-      ctx.globalAlpha=a*.7;
-      ctx.strokeStyle=blade.color; ctx.lineWidth=3*a;
-      ctx.shadowColor=blade.glow; ctx.shadowBlur=15;
-      ctx.lineCap='round'; ctx.lineJoin='round';
-      ctx.beginPath();
-      ctx.moveTo(slashLine[i-1].x,slashLine[i-1].y);
-      ctx.lineTo(slashLine[i].x,slashLine[i].y);
-      ctx.stroke();
-    }
-    ctx.restore();
+  renderAchs();
+}
+
+/* ════════════════════════════════════════
+   FLIP
+   ════════════════════════════════════════ */
+function flipCard(){
+  haptic("medium");
+  document.getElementById("flipCard").classList.toggle("flipped");
+  flipCount++;
+  if(flipCount>=10) unlockAch("mirror_self");
+}
+
+/* ════════════════════════════════════════
+   ACHIEVEMENTS
+   ════════════════════════════════════════ */
+function renderAchs(){
+  const ul=MOCK.user.unlocked;
+  const list=document.getElementById("achList");
+  list.innerHTML="";
+  ACHS.forEach(a=>{
+    const done=ul.includes(a.id);
+    const div=document.createElement("div");
+    div.className="ach-item "+(done?"done":"locked");
+    div.innerHTML=`<div class="ai-icon">${a.i}</div><div class="ai-body"><div class="ai-name">${a.n}</div><div class="ai-desc">${a.d}</div></div><div class="ai-chk">${done?"✓":"🔒"}</div>`;
+    list.appendChild(div);
+  });
+  if(ul.length>=40) unlockAch("legend_ach");
+}
+
+function unlockAch(id){
+  if(MOCK.user.unlocked.includes(id)) return;
+  MOCK.user.unlocked.push(id);
+  hapticN("success");
+  renderAchs();
+  const a=ACHS.find(x=>x.id===id);
+  if(a) showToast(`${a.i} Нова ачівка: ${a.n}`);
+}
+
+/* ════════════════════════════════════════
+   STICKERS
+   ════════════════════════════════════════ */
+function initStickers(){
+  const stickers=[...MOCK.stickers].sort((a,b)=>b.count-a.count);
+  const top3openers=stickers.slice(0,3).map(s=>s.opener);
+  const top3rank=MOCK.opener_ranking.slice(0,3).map(r=>r.username);
+  const isLegend=top3rank.includes(MOCK.user.username);
+  const allFromUser=top3openers.every(o=>o===MOCK.user.username);
+
+  const banner=document.getElementById("legBanner");
+  if(allFromUser){
+    banner.className="leg-banner god-s show";
+    banner.innerHTML=`👑 БОГ СТІКЕРІВ 👑<br><small style="font-size:.58rem;font-family:Montserrat,sans-serif;font-weight:400;opacity:.8">Всі три топ-стікери — твої відкриття</small>`;
+    unlockAch("sticker_god");
+  } else if(isLegend){
+    const pos=top3rank.indexOf(MOCK.user.username)+1;
+    banner.className="leg-banner legend-s show";
+    banner.innerHTML=`🏅 ЛЕГЕНДА СТІКЕРІВ · #${pos}<br><small style="font-size:.58rem;font-family:Montserrat,sans-serif;font-weight:400;opacity:.8">Ти в топ-3 першовідкривачів чату</small>`;
+    unlockAch("sticker_legend");
+    unlockAch("top_3_opener");
   }
 
-  // Fruits
-  fruits.forEach(f=>{
-    ctx.save();
-    ctx.translate(f.x,f.y);
-    ctx.rotate(f.rot);
-    const gp=Math.sin(f.t*.05+f.glowPhase)*.5+.5;
+  document.getElementById("sCount").textContent=stickers.length;
+  const grid=document.getElementById("sGrid");
+  grid.innerHTML="";
+  const medals=["🥇","🥈","🥉"];
+  const tc=["top1","top2","top3"];
 
-    if(f.isBomb) {
-      // Bomb
-      ctx.shadowColor='#ff4400'; ctx.shadowBlur=10+gp*10;
-      ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(0,0,f.radius,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#ff4400'; ctx.lineWidth=2; ctx.stroke();
-      ctx.fillStyle='#ff4400'; ctx.font='bold '+(f.radius*1.2)+'px serif';
-      ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('💣',0,0);
+  for(let i=0;i<100;i++){
+    const el=document.createElement("div");
+    const s=stickers[i];
+    if(s){
+      el.className="sc"+(i<3?" "+tc[i]:"");
+      el.innerHTML=`${i<3?`<div class="sc-medal">${medals[i]}</div>`:""}<div class="sc-emo">${s.emoji}</div><div class="sc-name">${s.name}</div><div class="sc-cnt">${s.count}×</div><div class="sc-opr">${s.opener}</div>`;
+      el.onclick=()=>haptic("light");
     } else {
-      // Fruit glow
-      const glow=ctx.createRadialGradient(0,0,0,0,0,f.radius*1.3);
-      glow.addColorStop(0,f.color+'44'); glow.addColorStop(1,'transparent');
-      ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(0,0,f.radius*1.3,0,Math.PI*2); ctx.fill();
-
-      // Body
-      const grad=ctx.createRadialGradient(-f.radius*.3,-f.radius*.3,0,0,0,f.radius);
-      grad.addColorStop(0,'#fff'); grad.addColorStop(.3,f.inner); grad.addColorStop(1,f.color);
-      ctx.shadowColor=f.color; ctx.shadowBlur=15+gp*8;
-      ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(0,0,f.radius,0,Math.PI*2); ctx.fill();
-
-      // Glass shine
-      ctx.fillStyle='rgba(255,255,255,.3)';
-      ctx.beginPath(); ctx.ellipse(-f.radius*.25,-f.radius*.3,f.radius*.3,f.radius*.18,-0.5,0,Math.PI*2); ctx.fill();
-
-      // Outline
-      ctx.strokeStyle=f.color+'aa'; ctx.lineWidth=1.5; ctx.stroke();
-
-      // Icon emoji
-      ctx.shadowBlur=0; ctx.fillStyle='#fff';
-      ctx.font='bold '+(f.radius*1.1)+'px serif';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(f.isBonus?'⭐':f.icon,0,1);
+      el.className="sc empty";
+      el.innerHTML=`<div style="font-size:.5rem;color:var(--text-dim)">—</div>`;
     }
-    ctx.restore();
-  });
-
-  // Particles
-  particles.forEach(p=>{
-    ctx.save(); ctx.globalAlpha=p.alpha;
-    if(p.type==='half') {
-      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
-      const g=ctx.createRadialGradient(0,0,0,0,0,p.r);
-      g.addColorStop(0,p.inner||p.color); g.addColorStop(1,p.color+'66');
-      ctx.fillStyle=g; ctx.shadowColor=p.color; ctx.shadowBlur=8;
-      ctx.beginPath(); ctx.arc(0,0,p.r,0,Math.PI); ctx.fill();
-    } else if(p.type==='splat') {
-      ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=5;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-    } else {
-      ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=8;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.alpha,0,Math.PI*2); ctx.fill();
-      if(p.effect==='sparks'||p.effect==='electric') {
-        ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.globalAlpha=p.alpha*.5;
-        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.vx*3,p.y-p.vy*3); ctx.stroke();
-      }
-    }
-    ctx.restore();
-  });
+    grid.appendChild(el);
+  }
+  if(stickers.length>=10) unlockAch("sticker_lord");
+  if(stickers.length>=20) unlockAch("collector");
 }
 
-// ==================== INIT ====================
-showScreen('menu');
+/* ════════════════════════════════════════
+   TAROT
+   ════════════════════════════════════════ */
+function initTarot(){
+  const last=parseInt(localStorage.getItem("benini_last_roll")||"0");
+  const diff=Date.now()-last;
+  const CD=24*60*60*1000;
+  if(last>0&&diff<CD) startCd(CD-diff);
+}
+
+function gnomePoke(){
+  haptic("light");
+  const g=document.getElementById("gnomeScene");
+  g.style.transform="scale(1.1) rotate(-4deg)";
+  setTimeout(()=>{g.style.transform="scale(1.1) rotate(4deg)";},120);
+  setTimeout(()=>{g.style.transform="";},280);
+}
+
+function startCd(remaining){
+  document.getElementById("drawBtn").disabled=true;
+  document.getElementById("cdBox").style.display="block";
+  clearInterval(cdInterval);
+  const tick=()=>{
+    if(remaining<=0){
+      clearInterval(cdInterval);
+      document.getElementById("drawBtn").disabled=false;
+      document.getElementById("cdBox").style.display="none";
+      return;
+    }
+    remaining-=1000;
+    const h=String(Math.floor(remaining/3600000)).padStart(2,"0");
+    const m=String(Math.floor(remaining%3600000/60000)).padStart(2,"0");
+    const s=String(Math.floor(remaining%60000/1000)).padStart(2,"0");
+    document.getElementById("cdTime").textContent=`${h}:${m}:${s}`;
+  };
+  tick();cdInterval=setInterval(tick,1000);
+}
+
+function drawTarot(){
+  haptic("heavy");
+  const btn=document.getElementById("drawBtn");
+  btn.disabled=true;
+  btn.textContent="✦ Гном тасує… ✦";
+  gnomePoke();setTimeout(gnomePoke,300);
+
+  setTimeout(()=>{
+    const card=ARCANA[Math.floor(Math.random()*ARCANA.length)];
+    const auraKey=calcAura(MOCK.user);
+    const pred=getPred(card,auraKey);
+
+    const res=document.getElementById("tarotRes");
+    res.className="tarot-res";
+    res.innerHTML=`<div class="drawn-face">
+      <span class="card-sym">${card.sym}</span>
+      <div class="card-rom">АРКАН ${card.num} · СТАРШІ АРКАНИ</div>
+      <div class="card-name-d">${card.name}</div>
+      <div class="card-kw">${card.kw}</div>
+      <div class="card-pred">${pred}</div>
+    </div>`;
+    // force reflow for animation
+    void res.offsetWidth;
+    res.classList.add("show");
+    btn.textContent="✦ Відкрити долю ✦";
+
+    localStorage.setItem("benini_last_roll",Date.now());
+    startCd(24*60*60*1000);
+    hapticN("success");
+
+    if(!drawnCards.includes(card.name)){drawnCards.push(card.name);localStorage.setItem("benini_drawn",JSON.stringify(drawnCards));}
+    unlockAch("the_chosen");
+    if(card.name==="Вежа") unlockAch("tower_survivor");
+    if(card.name==="Зірка") unlockAch("star_child");
+    if(card.name==="Сонце") unlockAch("sun_blessed");
+    if(card.name==="Смерть") unlockAch("death_walker");
+    if(drawnCards.length>=22) unlockAch("fool_journey");
+    if(new Date().getHours()===0) unlockAch("midnight_oracle");
+  },700);
+}
+
+/* ════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.style.opacity="1";
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.style.opacity="0",2800);
+}
 </script>
 </body>
 </html>
